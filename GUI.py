@@ -1,4 +1,5 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QVBoxLayout, QWidget, QLineEdit, QCheckBox, QTimeEdit, QSpinBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QVBoxLayout, QWidget, QLineEdit, QCheckBox, QTimeEdit, QSpinBox, QListWidgetItem, QFileDialog, QMessageBox, QSizePolicy, QWidget
+from PyQt5.QtCore import Qt, QSize
 
 import sys
 import platform
@@ -8,18 +9,17 @@ from PyQt5.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont, QFont
 
 ## ==> SPLASH SCREEN
 from ui_Splash import Ui_SplashScreen
-
-#from ui_UnproductiveSelections import Ui_MainWindow
+from ui_MainWindow import Ui_MainWindow
 
 ## ==> GLOBALS
 counter = 0
 
 # # YOUR APPLICATION
-# class UnproductiveSelections(QMainWindow):
-#     def __init__(self):
-#         QMainWindow.__init__(self)
-#         self.ui = Ui_MainWindow()
-#         self.ui.setupUi(self)
+class UnproductiveSelections(QMainWindow):
+     def __init__(self):
+         QMainWindow.__init__(self)
+         self.ui = Ui_MainWindow()
+         self.ui.setupUi(self)
 
 
 # SPLASH SCREEN
@@ -67,8 +67,8 @@ class SplashScreen(QMainWindow):
             self.timer.stop()
             
             #Show main window
-            # self.main = MainWindow()
-            # self.main.show()
+            self.main = MainWindow()
+            self.main.show()
             
             # CLOSE SPLASH SCREEN
             self.close()
@@ -76,7 +76,70 @@ class SplashScreen(QMainWindow):
         # INCREASE COUNTER
         counter += 1
 
+#Main Window
+class MainWindow(QMainWindow, Ui_MainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
 
+        # Connect signals to slots
+        self.AddWhitelist.clicked.connect(self.add_to_whitelist)
+        self.BrowseFile.clicked.connect(self.browse_file)
+        self.RemoveWhitelist.clicked.connect(self.remove_selected_from_whitelist)  # Connect the remove button
+
+        self.categories = []
+
+        # Example categories and sites
+        self.category_sites = {
+            "Social Media": ["facebook.com", "twitter.com"],
+            "Games": ["steam.com", "epicgames.com"],
+            "Entertainment": ["youtube.com", "netflix.com"]
+        }
+
+        # Populate unproductive categories with checkboxes and tooltips
+        self.populate_unproductive_categories()
+
+    # Apply size policies and stretch factors
+        self.apply_size_policies()
+        
+    def populate_unproductive_categories(self):
+        for category, examples in self.category_sites.items():
+            self.add_category(category, examples)
+
+    def add_category(self, category_name, examples):
+        checkbox = QCheckBox(category_name)
+        tooltip_text = "Examples: " + ", ".join(examples)
+        checkbox.setToolTip(tooltip_text)
+        self.Categories.addWidget(checkbox)
+        self.categories.append((category_name, checkbox, examples))
+
+    def add_to_whitelist(self):
+        url = self.EditWhitelist.text()
+        if url:
+            item = QListWidgetItem(url)
+            self.Whitelist.addItem(item)
+            self.EditWhitelist.clear()
+        else:
+            QMessageBox.warning(self, "Input Error", "Please enter a website or file address to whitelist.")
+
+    def browse_file(self):
+        file_path, _ = QFileDialog.getOpenFileName(self, "Select File to Whitelist")
+        if file_path:
+            self.EditWhitelist.setText(file_path)
+
+    def apply_size_policies(self):
+        # Set size policies for dynamic resizing
+        widgets = [self.EditWhitelist, self.AddWhitelist, self.BrowseFile, self.Whitelist, self.RemoveWhitelist]
+        for widget in widgets:
+            widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
+    def remove_selected_from_whitelist(self):
+        selected_items = self.Whitelist.selectedItems()
+        if not selected_items:
+            QMessageBox.warning(self, "Selection Error", "Please select an item to remove.")
+            return
+        for item in selected_items:
+            self.Whitelist.takeItem(self.Whitelist.row(item))
 
 
 if __name__ == "__main__":
