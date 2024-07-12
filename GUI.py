@@ -43,7 +43,7 @@ class SplashScreen(QMainWindow):
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.progress)
         # TIMER IN MILLISECONDS
-        self.timer.start(35)
+        self.timer.start(25)
 
 
         ## SHOW ==> MAIN WINDOW
@@ -91,9 +91,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Example categories and sites
         self.category_sites = {
-            "Social Media": ["facebook.com", "twitter.com"],
-            "Games": ["steam.com", "epicgames.com"],
-            "Entertainment": ["youtube.com", "netflix.com"]
+            "Social Media": ["facebook.com", "twitter.com", "instagram.com", "github.com"],
+            "Games": ["crazygames.com", "store.epicgames.com", "store.steampowered.com"],
+            "Video Entertainment": ["youtube.com", "netflix.com", "primevideo.com"],
+            "Visual Entertainment": ["globalcomix.com","mangadex.org","manganato.com","anime-planet.com", "readallcomics.com"],
+            "Forums": ["reddit.com","quora.com"],
+            "Online Shopping": ["amazon.com", "alibaba.com", "aliexpress.com", ],
+            "Productivity Killers": ["nytimes.com/games/wordle","nytimes.com/puzzles/spelling-bee","nytimes.com/crosswords/game/mini"]
         }
 
         # Populate unproductive categories with checkboxes and tooltips
