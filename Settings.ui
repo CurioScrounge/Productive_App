@@ -39,6 +39,19 @@
       <height>551</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>Segoe UI</family>
+      <pointsize>12</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QListWidget{
+	background-color: rgb(238, 238, 238);
+}</string>
+    </property>
    </widget>
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
@@ -79,6 +92,11 @@
        <bold>true</bold>
       </font>
      </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel{
+	color: rgb(220, 95, 0);
+}</string>
+     </property>
      <property name="text">
       <string>Run Settings</string>
      </property>
@@ -92,7 +110,7 @@
        <x>20</x>
        <y>90</y>
        <width>291</width>
-       <height>103</height>
+       <height>111</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
@@ -119,24 +137,17 @@
         <property name="verticalSpacing">
          <number>20</number>
         </property>
-        <item row="0" column="0">
-         <widget class="QLabel" name="label">
-          <property name="font">
-           <font>
-            <pointsize>15</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Start Time</string>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="1">
          <widget class="QLabel" name="label_2">
           <property name="font">
            <font>
             <pointsize>15</pointsize>
            </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLabel{
+	color: rgb(238, 238, 238);
+}</string>
           </property>
           <property name="text">
            <string>End Time</string>
@@ -158,6 +169,13 @@
             <weight>75</weight>
             <bold>true</bold>
            </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QTimeEdit{
+	background-color: rgb(238, 238, 238);
+	
+	color: rgb(220, 95, 0);
+}</string>
           </property>
           <property name="buttonSymbols">
            <enum>QAbstractSpinBox::PlusMinus</enum>
@@ -186,6 +204,30 @@
             <bold>true</bold>
            </font>
           </property>
+          <property name="styleSheet">
+           <string notr="true">QTimeEdit{
+	background-color: rgb(238, 238, 238);
+	
+	color: rgb(220, 95, 0);
+}</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label">
+          <property name="font">
+           <font>
+            <pointsize>15</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLabel{
+	color: rgb(238, 238, 238);
+}</string>
+          </property>
+          <property name="text">
+           <string>Start Time</string>
+          </property>
          </widget>
         </item>
        </layout>
@@ -195,7 +237,7 @@
     <widget class="QLabel" name="label_4">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>30</x>
        <y>220</y>
        <width>181</width>
        <height>31</height>
@@ -205,7 +247,14 @@
       <font>
        <family>Segoe UI</family>
        <pointsize>15</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
       </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel{
+	color: rgb(238, 238, 238);
+}</string>
      </property>
      <property name="text">
       <string>Days to run</string>
@@ -226,6 +275,12 @@
        <pointsize>12</pointsize>
       </font>
      </property>
+     <property name="styleSheet">
+      <string notr="true">QCheckBox{
+	
+	color: rgb(238, 238, 238);
+}</string>
+     </property>
      <property name="text">
       <string>Monday</string>
      </property>
@@ -244,6 +299,12 @@
        <family>Segoe UI</family>
        <pointsize>12</pointsize>
       </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QCheckBox{
+	
+	color: rgb(238, 238, 238);
+}</string>
      </property>
      <property name="text">
       <string>Tueday</string>
@@ -264,6 +325,12 @@
        <pointsize>12</pointsize>
       </font>
      </property>
+     <property name="styleSheet">
+      <string notr="true">QCheckBox{
+	
+	color: rgb(238, 238, 238);
+}</string>
+     </property>
      <property name="text">
       <string>Wednesday</string>
      </property>
@@ -282,6 +349,12 @@
        <family>Segoe UI</family>
        <pointsize>12</pointsize>
       </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QCheckBox{
+	
+	color: rgb(238, 238, 238);
+}</string>
      </property>
      <property name="text">
       <string>Thursday</string>
@@ -302,6 +375,12 @@
        <pointsize>12</pointsize>
       </font>
      </property>
+     <property name="styleSheet">
+      <string notr="true">QCheckBox{
+	
+	color: rgb(238, 238, 238);
+}</string>
+     </property>
      <property name="text">
       <string>Friday</string>
      </property>
@@ -320,6 +399,12 @@
        <family>Segoe UI</family>
        <pointsize>12</pointsize>
       </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QCheckBox{
+	
+	color: rgb(238, 238, 238);
+}</string>
      </property>
      <property name="text">
       <string>Saturday</string>
@@ -340,11 +425,17 @@
        <pointsize>12</pointsize>
       </font>
      </property>
+     <property name="styleSheet">
+      <string notr="true">QCheckBox{
+	
+	color: rgb(238, 238, 238);
+}</string>
+     </property>
      <property name="text">
       <string>Sunday</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="AddTimings">
+    <widget class="QPushButton" name="AddTiming">
      <property name="geometry">
       <rect>
        <x>30</x>
@@ -357,16 +448,23 @@
       <font>
        <family>Segoe UI</family>
        <pointsize>12</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
+       <weight>50</weight>
+       <bold>false</bold>
       </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton{
+	color: rgb(238, 238, 238);
+
+	background-color: rgb(104, 109, 118);
+}</string>
      </property>
      <property name="text">
       <string>Add Setting</string>
      </property>
     </widget>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="RemoveTiming">
     <property name="geometry">
      <rect>
       <x>640</x>
@@ -380,6 +478,13 @@
       <family>Segoe UI</family>
       <pointsize>11</pointsize>
      </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton{
+	color: rgb(238, 238, 238);
+
+	background-color: rgb(104, 109, 118);
+}</string>
     </property>
     <property name="text">
      <string>Remove</string>
@@ -402,6 +507,11 @@
       <bold>true</bold>
      </font>
     </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel{
+	color: rgb(220, 95, 0);
+}</string>
+    </property>
     <property name="text">
      <string>Defined Run Times</string>
     </property>
@@ -415,7 +525,7 @@
       <x>680</x>
       <y>110</y>
       <width>281</width>
-      <height>541</height>
+      <height>491</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -444,6 +554,11 @@
        <bold>true</bold>
       </font>
      </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel{
+	color: rgb(220, 95, 0);
+}</string>
+     </property>
      <property name="text">
       <string>Warning Message Delay Period</string>
      </property>
@@ -454,7 +569,7 @@
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QComboBox" name="comboBox">
+    <widget class="QComboBox" name="Delay">
      <property name="geometry">
       <rect>
        <x>40</x>
@@ -470,6 +585,11 @@
        <weight>75</weight>
        <bold>true</bold>
       </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QComboBox{
+	background-color: rgb(238, 238, 238);
+}</string>
      </property>
      <item>
       <property name="text">
@@ -491,6 +611,11 @@
        <family>Segoe UI</family>
        <pointsize>11</pointsize>
       </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel{
+	color: rgb(238, 238, 238);
+}</string>
      </property>
      <property name="text">
       <string>The program will until there has been</string>
@@ -514,6 +639,11 @@
        <pointsize>11</pointsize>
       </font>
      </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel{
+	color: rgb(238, 238, 238);
+}</string>
+     </property>
      <property name="text">
       <string>minutes of continuous</string>
      </property>
@@ -536,6 +666,11 @@
        <pointsize>11</pointsize>
       </font>
      </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel{
+	color: rgb(238, 238, 238);
+}</string>
+     </property>
      <property name="text">
       <string>unproductive activity before warning you.</string>
      </property>
@@ -544,11 +679,39 @@
      </property>
     </widget>
    </widget>
+   <widget class="QPushButton" name="BackHome">
+    <property name="geometry">
+     <rect>
+      <x>850</x>
+      <y>630</y>
+      <width>111</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Segoe UI</family>
+      <pointsize>11</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton{
+	color: rgb(238, 238, 238);
+
+	
+	background-color: rgb(220, 95, 0);
+}</string>
+    </property>
+    <property name="text">
+     <string>Back to Home</string>
+    </property>
+   </widget>
    <zorder>groupBox_2</zorder>
    <zorder>groupBox</zorder>
    <zorder>ExistingRunTimes</zorder>
    <zorder>label_5</zorder>
-   <zorder>pushButton</zorder>
+   <zorder>RemoveTiming</zorder>
+   <zorder>BackHome</zorder>
   </widget>
  </widget>
  <resources/>
