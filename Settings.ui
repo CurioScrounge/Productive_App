@@ -49,8 +49,18 @@
       <height>641</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true">QGroupBox{
+	border-color: rgba(255, 255, 255, 0);
+}
+
+</string>
+    </property>
     <property name="title">
-     <string>GroupBox</string>
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>false</bool>
     </property>
     <widget class="QLabel" name="label_3">
      <property name="geometry">
@@ -375,16 +385,6 @@
      <string>Remove</string>
     </property>
    </widget>
-   <widget class="QComboBox" name="comboBox">
-    <property name="geometry">
-     <rect>
-      <x>890</x>
-      <y>250</y>
-      <width>69</width>
-      <height>22</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
@@ -409,36 +409,146 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="label_6">
+   <widget class="QGroupBox" name="groupBox_2">
     <property name="geometry">
      <rect>
       <x>680</x>
-      <y>150</y>
-      <width>271</width>
-      <height>41</height>
+      <y>110</y>
+      <width>281</width>
+      <height>541</height>
      </rect>
     </property>
-    <property name="font">
-     <font>
-      <family>Segoe UI</family>
-      <pointsize>19</pointsize>
-      <weight>75</weight>
-      <bold>true</bold>
-     </font>
+    <property name="styleSheet">
+     <string notr="true">QGroupBox{
+	border-color: rgba(255, 255, 255, 0);
+}
+</string>
     </property>
-    <property name="text">
-     <string>Defined Run Times</string>
+    <property name="title">
+     <string/>
     </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
+    <widget class="QLabel" name="label_6">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>10</y>
+       <width>251</width>
+       <height>81</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI</family>
+       <pointsize>19</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Warning Message Delay Period</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="comboBox">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>150</y>
+       <width>51</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <item>
+      <property name="text">
+       <string>5</string>
+      </property>
+     </item>
+    </widget>
+    <widget class="QLabel" name="label_7">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>110</y>
+       <width>251</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI</family>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>The program will until there has been</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_8">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>150</y>
+       <width>161</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI</family>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>minutes of continuous</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_9">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>190</y>
+       <width>251</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI</family>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>unproductive activity before warning you.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
    </widget>
+   <zorder>groupBox_2</zorder>
    <zorder>groupBox</zorder>
    <zorder>ExistingRunTimes</zorder>
-   <zorder>comboBox</zorder>
    <zorder>label_5</zorder>
    <zorder>pushButton</zorder>
-   <zorder>label_6</zorder>
   </widget>
  </widget>
  <resources/>
