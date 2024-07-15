@@ -1,6 +1,20 @@
 {
-    "wait_time": "10",
-    "sessions": [],
+    "wait_time": "15",
+    "sessions": [
+        {
+            "start_time": "03:00",
+            "end_time": "00:00",
+            "days": [
+                true,
+                true,
+                true,
+                false,
+                false,
+                false,
+                false
+            ]
+        }
+    ],
     "categories": {
         "Social Media": true,
         "Games": true,
@@ -12,5 +26,7 @@
     },
     "whitelisted_sites": [
         "https://docs.google.com/document/d/1oQD6JDB-mOEzy9PgrZpUVMTgDrRXym1w0uVZnDREvPk/edit"
-    ]
+    ],
+    "override_delay": false,
+    "warning_message": "Unproductive activity detected! For your own good, please return to being productive!"
 }

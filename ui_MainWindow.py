@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'MainWindowSIrGqh.ui'
+## Form generated from reading UI file 'MainWindowFNGaAC.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-
 from PyQt5.QtWidgets import *
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import (QCoreApplication, QPropertyAnimation, QDate, QDateTime, QMetaObject, QObject, QPoint, QRect, QSize, QTime, QUrl, Qt, QEvent)
 from PyQt5.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont, QFontDatabase, QIcon, QKeySequence, QLinearGradient, QPalette, QPainter, QPixmap, QRadialGradient)
@@ -35,7 +33,10 @@ class Ui_MainWindow(object):
         self.groupBox = QGroupBox(self.centralwidget)
         self.groupBox.setObjectName(u"groupBox")
         self.groupBox.setGeometry(QRect(10, 20, 301, 621))
-        self.groupBox.setFlat(True)
+        self.groupBox.setStyleSheet(u"QGroupBox{\n"
+"border:none\n"
+"}")
+        self.groupBox.setFlat(False)
         self.verticalLayoutWidget = QWidget(self.groupBox)
         self.verticalLayoutWidget.setObjectName(u"verticalLayoutWidget")
         self.verticalLayoutWidget.setGeometry(QRect(10, 80, 281, 541))
@@ -69,7 +70,10 @@ class Ui_MainWindow(object):
         self.groupBox_2 = QGroupBox(self.centralwidget)
         self.groupBox_2.setObjectName(u"groupBox_2")
         self.groupBox_2.setGeometry(QRect(310, 20, 661, 621))
-        self.groupBox_2.setFlat(True)
+        self.groupBox_2.setStyleSheet(u"QGroupBox{\n"
+"border:none\n"
+"}")
+        self.groupBox_2.setFlat(False)
         self.EditWhitelist = QLineEdit(self.groupBox_2)
         self.EditWhitelist.setObjectName(u"EditWhitelist")
         self.EditWhitelist.setGeometry(QRect(60, 80, 481, 31))

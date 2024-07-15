@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'SettingshlXSOh.ui'
+## Form generated from reading UI file 'SettingsmmKKsS.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -9,7 +9,6 @@
 ################################################################################
 
 from PyQt5.QtWidgets import *
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import (QCoreApplication, QPropertyAnimation, QDate, QDateTime, QMetaObject, QObject, QPoint, QRect, QSize, QTime, QUrl, Qt, QEvent)
 from PyQt5.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont, QFontDatabase, QIcon, QKeySequence, QLinearGradient, QPalette, QPainter, QPixmap, QRadialGradient)
@@ -34,7 +33,7 @@ class Ui_Settings(object):
         self.centralwidget.setFont(font1)
         self.ExistingRunTimes = QListWidget(self.centralwidget)
         self.ExistingRunTimes.setObjectName(u"ExistingRunTimes")
-        self.ExistingRunTimes.setGeometry(QRect(360, 100, 301, 551))
+        self.ExistingRunTimes.setGeometry(QRect(340, 100, 301, 551))
         font2 = QFont()
         font2.setFamily(u"Segoe UI")
         font2.setPointSize(12)
@@ -46,9 +45,9 @@ class Ui_Settings(object):
 "}")
         self.groupBox = QGroupBox(self.centralwidget)
         self.groupBox.setObjectName(u"groupBox")
-        self.groupBox.setGeometry(QRect(10, 10, 331, 641))
+        self.groupBox.setGeometry(QRect(10, 10, 321, 641))
         self.groupBox.setStyleSheet(u"QGroupBox{\n"
-"	border-color: rgba(255, 255, 255, 0);\n"
+"	border:none;\n"
 "}\n"
 "\n"
 "")
@@ -68,7 +67,7 @@ class Ui_Settings(object):
         self.label_3.setAlignment(Qt.AlignCenter)
         self.verticalLayoutWidget = QWidget(self.groupBox)
         self.verticalLayoutWidget.setObjectName(u"verticalLayoutWidget")
-        self.verticalLayoutWidget.setGeometry(QRect(20, 90, 291, 111))
+        self.verticalLayoutWidget.setGeometry(QRect(20, 90, 291, 127))
         self.verticalLayout = QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -81,16 +80,16 @@ class Ui_Settings(object):
         self.formLayout.setFormAlignment(Qt.AlignJustify|Qt.AlignTop)
         self.formLayout.setHorizontalSpacing(30)
         self.formLayout.setVerticalSpacing(20)
-        self.label_2 = QLabel(self.verticalLayoutWidget)
-        self.label_2.setObjectName(u"label_2")
+        self.label = QLabel(self.verticalLayoutWidget)
+        self.label.setObjectName(u"label")
         font4 = QFont()
         font4.setPointSize(15)
-        self.label_2.setFont(font4)
-        self.label_2.setStyleSheet(u"QLabel{\n"
+        self.label.setFont(font4)
+        self.label.setStyleSheet(u"QLabel{\n"
 "	color: rgb(238, 238, 238);\n"
 "}")
 
-        self.formLayout.setWidget(0, QFormLayout.FieldRole, self.label_2)
+        self.formLayout.setWidget(0, QFormLayout.LabelRole, self.label)
 
         self.Start = QTimeEdit(self.verticalLayoutWidget)
         self.Start.setObjectName(u"Start")
@@ -124,14 +123,14 @@ class Ui_Settings(object):
 
         self.formLayout.setWidget(1, QFormLayout.FieldRole, self.End)
 
-        self.label = QLabel(self.verticalLayoutWidget)
-        self.label.setObjectName(u"label")
-        self.label.setFont(font4)
-        self.label.setStyleSheet(u"QLabel{\n"
+        self.label_2 = QLabel(self.verticalLayoutWidget)
+        self.label_2.setObjectName(u"label_2")
+        self.label_2.setFont(font4)
+        self.label_2.setStyleSheet(u"QLabel{\n"
 "	color: rgb(238, 238, 238);\n"
 "}")
 
-        self.formLayout.setWidget(0, QFormLayout.LabelRole, self.label)
+        self.formLayout.setWidget(0, QFormLayout.FieldRole, self.label_2)
 
 
         self.verticalLayout.addLayout(self.formLayout)
@@ -218,7 +217,7 @@ class Ui_Settings(object):
 "}")
         self.RemoveTiming = QPushButton(self.centralwidget)
         self.RemoveTiming.setObjectName(u"RemoveTiming")
-        self.RemoveTiming.setGeometry(QRect(640, 60, 81, 31))
+        self.RemoveTiming.setGeometry(QRect(620, 40, 81, 31))
         font8 = QFont()
         font8.setFamily(u"Segoe UI")
         font8.setPointSize(11)
@@ -230,7 +229,7 @@ class Ui_Settings(object):
 "}")
         self.label_5 = QLabel(self.centralwidget)
         self.label_5.setObjectName(u"label_5")
-        self.label_5.setGeometry(QRect(360, 30, 301, 41))
+        self.label_5.setGeometry(QRect(340, 30, 301, 41))
         self.label_5.setFont(font3)
         self.label_5.setStyleSheet(u"QLabel{\n"
 "	color: rgb(220, 95, 0);\n"
@@ -238,15 +237,20 @@ class Ui_Settings(object):
         self.label_5.setAlignment(Qt.AlignCenter)
         self.groupBox_2 = QGroupBox(self.centralwidget)
         self.groupBox_2.setObjectName(u"groupBox_2")
-        self.groupBox_2.setGeometry(QRect(680, 110, 281, 551))
+        self.groupBox_2.setGeometry(QRect(650, 80, 311, 571))
         self.groupBox_2.setStyleSheet(u"QGroupBox{\n"
-"	border-color: rgba(255, 255, 255, 0);\n"
-"}\n"
-"")
+"	border:none;\n"
+"}")
         self.label_6 = QLabel(self.groupBox_2)
         self.label_6.setObjectName(u"label_6")
-        self.label_6.setGeometry(QRect(20, 10, 251, 81))
-        self.label_6.setFont(font3)
+        self.label_6.setGeometry(QRect(10, 240, 291, 31))
+        font9 = QFont()
+        font9.setFamily(u"Segoe UI")
+        font9.setPointSize(14)
+        font9.setBold(False)
+        font9.setUnderline(True)
+        font9.setWeight(50)
+        self.label_6.setFont(font9)
         self.label_6.setStyleSheet(u"QLabel{\n"
 "	color: rgb(220, 95, 0);\n"
 "}")
@@ -254,19 +258,19 @@ class Ui_Settings(object):
         self.label_6.setWordWrap(True)
         self.Delay = QComboBox(self.groupBox_2)
         self.Delay.setObjectName(u"Delay")
-        self.Delay.setGeometry(QRect(40, 150, 51, 31))
-        font9 = QFont()
-        font9.setFamily(u"Segoe UI")
-        font9.setPointSize(12)
-        font9.setBold(True)
-        font9.setWeight(75)
-        self.Delay.setFont(font9)
+        self.Delay.setGeometry(QRect(40, 310, 51, 31))
+        font10 = QFont()
+        font10.setFamily(u"Segoe UI")
+        font10.setPointSize(12)
+        font10.setBold(True)
+        font10.setWeight(75)
+        self.Delay.setFont(font10)
         self.Delay.setStyleSheet(u"QComboBox{\n"
 "	background-color: rgb(238, 238, 238);\n"
 "}")
         self.label_7 = QLabel(self.groupBox_2)
         self.label_7.setObjectName(u"label_7")
-        self.label_7.setGeometry(QRect(20, 110, 251, 31))
+        self.label_7.setGeometry(QRect(20, 280, 281, 21))
         self.label_7.setFont(font8)
         self.label_7.setStyleSheet(u"QLabel{\n"
 "	color: rgb(238, 238, 238);\n"
@@ -274,7 +278,7 @@ class Ui_Settings(object):
         self.label_7.setWordWrap(True)
         self.label_8 = QLabel(self.groupBox_2)
         self.label_8.setObjectName(u"label_8")
-        self.label_8.setGeometry(QRect(100, 150, 161, 31))
+        self.label_8.setGeometry(QRect(100, 310, 161, 21))
         self.label_8.setFont(font8)
         self.label_8.setStyleSheet(u"QLabel{\n"
 "	color: rgb(238, 238, 238);\n"
@@ -282,7 +286,7 @@ class Ui_Settings(object):
         self.label_8.setWordWrap(True)
         self.label_9 = QLabel(self.groupBox_2)
         self.label_9.setObjectName(u"label_9")
-        self.label_9.setGeometry(QRect(20, 190, 251, 41))
+        self.label_9.setGeometry(QRect(20, 350, 281, 21))
         self.label_9.setFont(font8)
         self.label_9.setStyleSheet(u"QLabel{\n"
 "	color: rgb(238, 238, 238);\n"
@@ -290,7 +294,7 @@ class Ui_Settings(object):
         self.label_9.setWordWrap(True)
         self.BackHome = QPushButton(self.groupBox_2)
         self.BackHome.setObjectName(u"BackHome")
-        self.BackHome.setGeometry(QRect(170, 520, 111, 31))
+        self.BackHome.setGeometry(QRect(190, 540, 111, 31))
         self.BackHome.setFont(font8)
         self.BackHome.setStyleSheet(u"QPushButton{\n"
 "	color: rgb(238, 238, 238);\n"
@@ -300,15 +304,62 @@ class Ui_Settings(object):
 "}")
         self.Save = QPushButton(self.groupBox_2)
         self.Save.setObjectName(u"Save")
-        self.Save.setGeometry(QRect(190, 470, 91, 31))
-        font10 = QFont()
-        font10.setFamily(u"Segoe UI")
-        font10.setPointSize(9)
-        self.Save.setFont(font10)
+        self.Save.setGeometry(QRect(240, 380, 61, 31))
+        font11 = QFont()
+        font11.setFamily(u"Segoe UI")
+        font11.setPointSize(9)
+        self.Save.setFont(font11)
         self.Save.setStyleSheet(u"QPushButton{\n"
 "	color: rgb(238, 238, 238);\n"
 "\n"
 "	background-color: rgb(104, 109, 118);\n"
+"}")
+        self.OverrideDelay = QCheckBox(self.groupBox_2)
+        self.OverrideDelay.setObjectName(u"OverrideDelay")
+        self.OverrideDelay.setGeometry(QRect(20, 470, 231, 41))
+        font12 = QFont()
+        font12.setFamily(u"Segoe UI")
+        font12.setPointSize(11)
+        font12.setBold(True)
+        font12.setWeight(75)
+        self.OverrideDelay.setFont(font12)
+        self.OverrideDelay.setStyleSheet(u"QCheckBox{\n"
+"	\n"
+"	color: rgb(220, 95, 0);\n"
+"}")
+        self.label_10 = QLabel(self.groupBox_2)
+        self.label_10.setObjectName(u"label_10")
+        self.label_10.setGeometry(QRect(20, 430, 281, 41))
+        self.label_10.setFont(font8)
+        self.label_10.setStyleSheet(u"QLabel{\n"
+"	color: rgb(238, 238, 238);\n"
+"}")
+        self.label_10.setWordWrap(True)
+        self.label_11 = QLabel(self.groupBox_2)
+        self.label_11.setObjectName(u"label_11")
+        self.label_11.setGeometry(QRect(20, 10, 271, 41))
+        self.label_11.setFont(font3)
+        self.label_11.setStyleSheet(u"QLabel{\n"
+"	color: rgb(220, 95, 0);\n"
+"}")
+        self.label_11.setAlignment(Qt.AlignCenter)
+        self.label_11.setWordWrap(True)
+        self.textEdit = QTextEdit(self.groupBox_2)
+        self.textEdit.setObjectName(u"textEdit")
+        self.textEdit.setGeometry(QRect(10, 90, 291, 141))
+        self.textEdit.setFont(font)
+        self.textEdit.setStyleSheet(u"QTextEdit{\n"
+"	background-color: rgb(238, 238, 238);\n"
+"	color: rgb(55, 58, 64);\n"
+"}")
+        self.label_12 = QLabel(self.groupBox_2)
+        self.label_12.setObjectName(u"label_12")
+        self.label_12.setGeometry(QRect(10, 60, 261, 20))
+        font13 = QFont()
+        font13.setPointSize(11)
+        self.label_12.setFont(font13)
+        self.label_12.setStyleSheet(u"QLabel{\n"
+"	color: rgb(238, 238, 238);\n"
 "}")
         Settings.setCentralWidget(self.centralwidget)
         self.groupBox_2.raise_()
@@ -326,8 +377,8 @@ class Ui_Settings(object):
         Settings.setWindowTitle(QCoreApplication.translate("Settings", u"MainWindow", None))
         self.groupBox.setTitle("")
         self.label_3.setText(QCoreApplication.translate("Settings", u"Run Settings", None))
-        self.label_2.setText(QCoreApplication.translate("Settings", u"End Time", None))
         self.label.setText(QCoreApplication.translate("Settings", u"Start Time", None))
+        self.label_2.setText(QCoreApplication.translate("Settings", u"End Time", None))
         self.label_4.setText(QCoreApplication.translate("Settings", u"Days to run", None))
         self.monday.setText(QCoreApplication.translate("Settings", u"Monday", None))
         self.tuesday.setText(QCoreApplication.translate("Settings", u"Tueday", None))
@@ -341,10 +392,19 @@ class Ui_Settings(object):
         self.label_5.setText(QCoreApplication.translate("Settings", u"Defined Run Times", None))
         self.groupBox_2.setTitle("")
         self.label_6.setText(QCoreApplication.translate("Settings", u"Warning Message Delay Period", None))
-        self.label_7.setText(QCoreApplication.translate("Settings", u"The program will until there has been", None))
+        self.label_7.setText(QCoreApplication.translate("Settings", u"The program will wait until there has been", None))
         self.label_8.setText(QCoreApplication.translate("Settings", u"minutes of continuous", None))
         self.label_9.setText(QCoreApplication.translate("Settings", u"unproductive activity before warning you.", None))
         self.BackHome.setText(QCoreApplication.translate("Settings", u"Back to Home", None))
-        self.Save.setText(QCoreApplication.translate("Settings", u"Save Settings", None))
+        self.Save.setText(QCoreApplication.translate("Settings", u"Save", None))
+        self.OverrideDelay.setText(QCoreApplication.translate("Settings", u"Override Delay Period", None))
+        self.label_10.setText(QCoreApplication.translate("Settings", u"OR immediately show warning message upon unproductive activity:", None))
+        self.label_11.setText(QCoreApplication.translate("Settings", u"Warning Message", None))
+        self.textEdit.setHtml(QCoreApplication.translate("Settings", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'Segoe UI'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>", None))
+        self.label_12.setText(QCoreApplication.translate("Settings", u"Edit warning message:", None))
     # retranslateUi
 

@@ -34,11 +34,16 @@ QCheckBox{
       <height>621</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true">QGroupBox{
+border:none
+}</string>
+    </property>
     <property name="title">
      <string/>
     </property>
     <property name="flat">
-     <bool>true</bool>
+     <bool>false</bool>
     </property>
     <widget class="QWidget" name="verticalLayoutWidget">
      <property name="geometry">
@@ -114,11 +119,16 @@ QCheckBox{
       <height>621</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true">QGroupBox{
+border:none
+}</string>
+    </property>
     <property name="title">
      <string/>
     </property>
     <property name="flat">
-     <bool>true</bool>
+     <bool>false</bool>
     </property>
     <widget class="QLineEdit" name="EditWhitelist">
      <property name="geometry">

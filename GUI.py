@@ -1,7 +1,7 @@
 import sys
 import json
-from PyQt5.QtWidgets import QApplication, QMainWindow, QCheckBox, QListWidgetItem, QFileDialog, QMessageBox, QSizePolicy
-from PyQt5.QtCore import Qt, QTime, QTimer
+from PyQt5.QtWidgets import QApplication, QMainWindow, QCheckBox, QListWidgetItem, QFileDialog, QMessageBox, QVBoxLayout, QFormLayout, QLineEdit, QTextEdit
+from PyQt5.QtCore import Qt, QTime, QTimer, QElapsedTimer
 from PyQt5.QtGui import QFont
 from PyQt5 import QtCore
 
@@ -17,19 +17,44 @@ SETTINGS_FILE = 'settings.json'
 def load_settings():
     try:
         with open(SETTINGS_FILE, 'r') as f:
-            return json.load(f)
+            settings = json.load(f)
+            # Convert session times back to QTime objects
+            for session in settings.get('sessions', []):
+                if isinstance(session["start_time"], str):
+                    session["start_time"] = QTime.fromString(session["start_time"], "HH:mm")
+                if isinstance(session["end_time"], str):
+                    session["end_time"] = QTime.fromString(session["end_time"], "HH:mm")
+            return settings
     except FileNotFoundError:
         return {
             "wait_time": "5",
             "sessions": [],
             "categories": {},
-            "whitelisted_sites": []
+            "whitelisted_sites": [],
+            "override_delay": False,
+            "warning_message": "Unproductive activity detected! For your own good, please return to being productive!"
         }
 
 # Save settings to file
 def save_settings(settings):
+    # Create a copy of the settings to convert QTime objects to strings
+    settings_copy = {
+        "wait_time": settings["wait_time"],
+        "sessions": [
+            {
+                "start_time": session["start_time"].toString("HH:mm"),
+                "end_time": session["end_time"].toString("HH:mm"),
+                "days": session["days"]
+            }
+            for session in settings["sessions"]
+        ],
+        "categories": settings["categories"],
+        "whitelisted_sites": settings["whitelisted_sites"],
+        "override_delay": settings.get("override_delay", False),
+        "warning_message": settings.get("warning_message", "Unproductive activity detected! For your own good, please return to being productive!")
+    }
     with open(SETTINGS_FILE, 'w') as f:
-        json.dump(settings, f, indent=4)
+        json.dump(settings_copy, f, indent=4)
 
 # Global counter for the splash screen
 counter = 0
@@ -81,6 +106,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.sessions = self.settings.get("sessions", [])
         self.categories = self.settings.get("categories", {})
         self.whitelisted_sites = self.settings.get("whitelisted_sites", [])
+        self.override_delay = self.settings.get("override_delay", False)
+        self.warning_message = self.settings.get("warning_message", "Unproductive activity detected! For your own good, please return to being productive!")
+
+        # Track unproductive activity
+        self.unproductive_flag = False
+        self.unproductive_timer = QElapsedTimer()
 
         # Connect signals to slots
         self.AddWhitelist.clicked.connect(self.add_to_whitelist)
@@ -109,9 +140,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.check_sessions)
         self.timer.start(60000)  # Check every minute
-
-        # Apply size policies and stretch factors
-        self.apply_size_policies()
 
     def populate_unproductive_categories(self):
         for category, examples in self.category_sites.items():
@@ -163,29 +191,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             save_settings(self.settings)
             self.Whitelist.takeItem(self.Whitelist.row(item))
 
-    def apply_size_policies(self):
-        # Set size policies for dynamic resizing
-        widgets = [self.EditWhitelist, self.AddWhitelist, self.BrowseFile, self.Whitelist, self.RemoveWhitelist]
-        for widget in widgets:
-            widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-
-    def resizeEvent(self, event):
-        new_size = event.size()
-
-        # Calculate the new font size based on the window size
-        font_size = max(10, new_size.height() // 40)
-        font = QFont()
-        font.setPointSize(font_size)
-
-        # Apply the new font to all widgets
-        widgets = [self.EditWhitelist, self.AddWhitelist, self.BrowseFile, self.Whitelist, self.RemoveWhitelist]
-        for checkbox in self.Categories.findChildren(QCheckBox):
-            checkbox.setFont(font)
-        for widget in widgets:
-            widget.setFont(font)
-
-        super().resizeEvent(event)
-
     def open_settings(self):
         self.settings_page = SettingsPage(self)
         self.settings_page.show()
@@ -206,13 +211,30 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for session in self.sessions:
             if session["days"][current_day]:
                 if session["start_time"] <= current_time <= session["end_time"]:
-                    self.run_program()
+                    self.detect_unproductive_activity()
 
-    def run_program(self):
-        # Convert wait time to seconds
-        wait_seconds = int(self.wait_time) * 60
-        # Logic to run the program
-        print(f"Program is running based on scheduled time with a wait time of {wait_seconds} seconds")
+    def detect_unproductive_activity(self):
+        # Logic to detect unproductive activity
+        if self.is_unproductive_activity_detected():
+            if self.override_delay:
+                self.send_warning_message()
+            else:
+                if not self.unproductive_flag:
+                    self.unproductive_flag = True
+                    self.unproductive_timer.start()
+                elif self.unproductive_timer.elapsed() >= int(self.wait_time) * 60000:
+                    self.send_warning_message()
+                    self.unproductive_flag = False
+        else:
+            self.unproductive_flag = False
+
+    def is_unproductive_activity_detected(self):
+        # Replace with actual logic to detect unproductive activity
+        # Here, you need to implement the actual detection logic
+        return True
+
+    def send_warning_message(self):
+        QMessageBox.warning(self, "Warning", self.warning_message)
 
 # Settings Page Class
 class SettingsPage(QMainWindow, Ui_Settings):
@@ -229,6 +251,18 @@ class SettingsPage(QMainWindow, Ui_Settings):
 
         # Add predefined wait times to the combo box
         self.Delay.addItems(["5", "10", "15", "30"])
+
+        # Add OverrideDelay checkbox
+        self.OverrideDelay = QCheckBox("Override Delay")
+        self.OverrideDelay.setChecked(self.parent().override_delay)
+        self.OverrideDelay.stateChanged.connect(self.set_override_delay)
+        self.formLayout.addRow(self.OverrideDelay)
+
+        # Add Warning Message TextEdit
+        self.WarningMessage = QTextEdit()
+        self.WarningMessage.setPlainText(self.parent().warning_message)
+        self.formLayout.addRow("Warning Message:", self.WarningMessage)
+
         self.reload_settings_page()  # Load initial settings
 
     def add_session(self):
@@ -270,9 +304,16 @@ class SettingsPage(QMainWindow, Ui_Settings):
         self.parent().set_wait_time(wait_time)
         self.parent().sessions = self.sessions
         self.parent().settings["sessions"] = self.sessions
+        self.parent().settings["override_delay"] = self.OverrideDelay.isChecked()
+        self.parent().settings["warning_message"] = self.WarningMessage.toPlainText()
         save_settings(self.parent().settings)
         print("Settings saved")
         self.reload_settings_page()
+
+    def set_override_delay(self, state):
+        self.parent().override_delay = bool(state)
+        self.parent().settings["override_delay"] = self.parent().override_delay
+        save_settings(self.parent().settings)
 
     def reload_settings_page(self):
         # Clear and reload the settings page
@@ -282,6 +323,10 @@ class SettingsPage(QMainWindow, Ui_Settings):
         index = self.Delay.findText(current_wait_time)
         if index != -1:
             self.Delay.setCurrentIndex(index)
+        # Set the override delay checkbox
+        self.OverrideDelay.setChecked(self.parent().override_delay)
+        # Set the warning message text
+        self.WarningMessage.setPlainText(self.parent().warning_message)
 
     def go_back(self):
         self.parent().show()
