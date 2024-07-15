@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'MainWindowqnVSHx.ui'
+## Form generated from reading UI file 'MainWindowSIrGqh.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
+
 
 from PyQt5.QtWidgets import *
 
@@ -34,6 +35,7 @@ class Ui_MainWindow(object):
         self.groupBox = QGroupBox(self.centralwidget)
         self.groupBox.setObjectName(u"groupBox")
         self.groupBox.setGeometry(QRect(10, 20, 301, 621))
+        self.groupBox.setFlat(True)
         self.verticalLayoutWidget = QWidget(self.groupBox)
         self.verticalLayoutWidget.setObjectName(u"verticalLayoutWidget")
         self.verticalLayoutWidget.setGeometry(QRect(10, 80, 281, 541))
@@ -53,9 +55,21 @@ class Ui_MainWindow(object):
 "	color: rgb(220, 95, 0);\n"
 "}")
         self.label.setAlignment(Qt.AlignCenter)
+        self.frame = QFrame(self.groupBox)
+        self.frame.setObjectName(u"frame")
+        self.frame.setGeometry(QRect(10, 78, 279, 541))
+        self.frame.setStyleSheet(u"QFrame{\n"
+"	background-color: rgb(238, 238, 238);\n"
+"}")
+        self.frame.setFrameShape(QFrame.StyledPanel)
+        self.frame.setFrameShadow(QFrame.Raised)
+        self.frame.raise_()
+        self.verticalLayoutWidget.raise_()
+        self.label.raise_()
         self.groupBox_2 = QGroupBox(self.centralwidget)
         self.groupBox_2.setObjectName(u"groupBox_2")
         self.groupBox_2.setGeometry(QRect(310, 20, 661, 621))
+        self.groupBox_2.setFlat(True)
         self.EditWhitelist = QLineEdit(self.groupBox_2)
         self.EditWhitelist.setObjectName(u"EditWhitelist")
         self.EditWhitelist.setGeometry(QRect(60, 80, 481, 31))
@@ -133,6 +147,16 @@ class Ui_MainWindow(object):
 "\n"
 "	background-color: rgb(238, 238, 238);\n"
 "}")
+        self.Settings = QPushButton(self.centralwidget)
+        self.Settings.setObjectName(u"Settings")
+        self.Settings.setGeometry(QRect(910, 11, 51, 31))
+        font6 = QFont()
+        font6.setBold(False)
+        font6.setWeight(50)
+        self.Settings.setFont(font6)
+        self.Settings.setStyleSheet(u"QPushButton{\n"
+"	background-color: rgb(220, 95, 0);\n"
+"}")
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -154,5 +178,6 @@ class Ui_MainWindow(object):
         self.AddWhitelist.setText(QCoreApplication.translate("MainWindow", u"Enter", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"Whitelisted Websites/Local Files", None))
         self.RemoveWhitelist.setText(QCoreApplication.translate("MainWindow", u"-", None))
+        self.Settings.setText(QCoreApplication.translate("MainWindow", u"Settings", None))
     # retranslateUi
 

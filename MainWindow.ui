@@ -304,9 +304,9 @@ background-color: rgb(104, 109, 118);
    <widget class="QPushButton" name="Settings">
     <property name="geometry">
      <rect>
-      <x>920</x>
+      <x>910</x>
       <y>11</y>
-      <width>41</width>
+      <width>51</width>
       <height>31</height>
      </rect>
     </property>

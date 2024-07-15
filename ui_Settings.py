@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'SettingskDgNjW.ui'
+## Form generated from reading UI file 'SettingshlXSOh.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -13,7 +13,6 @@ from PyQt5.QtWidgets import *
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import (QCoreApplication, QPropertyAnimation, QDate, QDateTime, QMetaObject, QObject, QPoint, QRect, QSize, QTime, QUrl, Qt, QEvent)
 from PyQt5.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont, QFontDatabase, QIcon, QKeySequence, QLinearGradient, QPalette, QPainter, QPixmap, QRadialGradient)
-
 
 
 class Ui_Settings(object):
@@ -239,7 +238,7 @@ class Ui_Settings(object):
         self.label_5.setAlignment(Qt.AlignCenter)
         self.groupBox_2 = QGroupBox(self.centralwidget)
         self.groupBox_2.setObjectName(u"groupBox_2")
-        self.groupBox_2.setGeometry(QRect(680, 110, 281, 491))
+        self.groupBox_2.setGeometry(QRect(680, 110, 281, 551))
         self.groupBox_2.setStyleSheet(u"QGroupBox{\n"
 "	border-color: rgba(255, 255, 255, 0);\n"
 "}\n"
@@ -254,7 +253,6 @@ class Ui_Settings(object):
         self.label_6.setAlignment(Qt.AlignCenter)
         self.label_6.setWordWrap(True)
         self.Delay = QComboBox(self.groupBox_2)
-        self.Delay.addItem("")
         self.Delay.setObjectName(u"Delay")
         self.Delay.setGeometry(QRect(40, 150, 51, 31))
         font9 = QFont()
@@ -290,9 +288,9 @@ class Ui_Settings(object):
 "	color: rgb(238, 238, 238);\n"
 "}")
         self.label_9.setWordWrap(True)
-        self.BackHome = QPushButton(self.centralwidget)
+        self.BackHome = QPushButton(self.groupBox_2)
         self.BackHome.setObjectName(u"BackHome")
-        self.BackHome.setGeometry(QRect(850, 630, 111, 31))
+        self.BackHome.setGeometry(QRect(170, 520, 111, 31))
         self.BackHome.setFont(font8)
         self.BackHome.setStyleSheet(u"QPushButton{\n"
 "	color: rgb(238, 238, 238);\n"
@@ -300,13 +298,24 @@ class Ui_Settings(object):
 "	\n"
 "	background-color: rgb(220, 95, 0);\n"
 "}")
+        self.Save = QPushButton(self.groupBox_2)
+        self.Save.setObjectName(u"Save")
+        self.Save.setGeometry(QRect(190, 470, 91, 31))
+        font10 = QFont()
+        font10.setFamily(u"Segoe UI")
+        font10.setPointSize(9)
+        self.Save.setFont(font10)
+        self.Save.setStyleSheet(u"QPushButton{\n"
+"	color: rgb(238, 238, 238);\n"
+"\n"
+"	background-color: rgb(104, 109, 118);\n"
+"}")
         Settings.setCentralWidget(self.centralwidget)
         self.groupBox_2.raise_()
         self.groupBox.raise_()
         self.ExistingRunTimes.raise_()
         self.label_5.raise_()
         self.RemoveTiming.raise_()
-        self.BackHome.raise_()
 
         self.retranslateUi(Settings)
 
@@ -332,11 +341,10 @@ class Ui_Settings(object):
         self.label_5.setText(QCoreApplication.translate("Settings", u"Defined Run Times", None))
         self.groupBox_2.setTitle("")
         self.label_6.setText(QCoreApplication.translate("Settings", u"Warning Message Delay Period", None))
-        self.Delay.setItemText(0, QCoreApplication.translate("Settings", u"5", None))
-
         self.label_7.setText(QCoreApplication.translate("Settings", u"The program will until there has been", None))
         self.label_8.setText(QCoreApplication.translate("Settings", u"minutes of continuous", None))
         self.label_9.setText(QCoreApplication.translate("Settings", u"unproductive activity before warning you.", None))
         self.BackHome.setText(QCoreApplication.translate("Settings", u"Back to Home", None))
+        self.Save.setText(QCoreApplication.translate("Settings", u"Save Settings", None))
     # retranslateUi
 

@@ -525,7 +525,7 @@
       <x>680</x>
       <y>110</y>
       <width>281</width>
-      <height>491</height>
+      <height>551</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -678,40 +678,65 @@
       <bool>true</bool>
      </property>
     </widget>
-   </widget>
-   <widget class="QPushButton" name="BackHome">
-    <property name="geometry">
-     <rect>
-      <x>850</x>
-      <y>630</y>
-      <width>111</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Segoe UI</family>
-      <pointsize>11</pointsize>
-     </font>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QPushButton{
+    <widget class="QPushButton" name="BackHome">
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>520</y>
+       <width>111</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI</family>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton{
 	color: rgb(238, 238, 238);
 
 	
 	background-color: rgb(220, 95, 0);
 }</string>
-    </property>
-    <property name="text">
-     <string>Back to Home</string>
-    </property>
+     </property>
+     <property name="text">
+      <string>Back to Home</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="Save">
+     <property name="geometry">
+      <rect>
+       <x>190</x>
+       <y>470</y>
+       <width>91</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI</family>
+       <pointsize>9</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton{
+	color: rgb(238, 238, 238);
+
+	background-color: rgb(104, 109, 118);
+}</string>
+     </property>
+     <property name="text">
+      <string>Save Settings</string>
+     </property>
+    </widget>
    </widget>
    <zorder>groupBox_2</zorder>
    <zorder>groupBox</zorder>
    <zorder>ExistingRunTimes</zorder>
    <zorder>label_5</zorder>
    <zorder>RemoveTiming</zorder>
-   <zorder>BackHome</zorder>
   </widget>
  </widget>
  <resources/>
