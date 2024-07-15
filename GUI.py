@@ -1,8 +1,7 @@
 import sys
 import json
-from PyQt5.QtWidgets import QApplication, QMainWindow, QCheckBox, QListWidgetItem, QFileDialog, QMessageBox, QVBoxLayout, QFormLayout, QLineEdit, QTextEdit
+from PyQt5.QtWidgets import QApplication, QMainWindow, QCheckBox, QListWidgetItem, QFileDialog, QMessageBox, QTextEdit
 from PyQt5.QtCore import Qt, QTime, QTimer, QElapsedTimer
-from PyQt5.QtGui import QFont
 from PyQt5 import QtCore
 
 # Import the generated UI files
@@ -230,7 +229,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def is_unproductive_activity_detected(self):
         # Replace with actual logic to detect unproductive activity
-        # Here, you need to implement the actual detection logic
         return True
 
     def send_warning_message(self):
@@ -240,37 +238,36 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 class SettingsPage(QMainWindow, Ui_Settings):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setupUi(self)
+        self.ui = Ui_Settings()
+        self.ui.setupUi(self)
         self.sessions = self.parent().sessions
 
         # Connect buttons
-        self.AddTiming.clicked.connect(self.add_session)
-        self.RemoveTiming.clicked.connect(self.remove_session)
-        self.Save.clicked.connect(self.save_settings)
-        self.BackHome.clicked.connect(self.go_back)  # Connect the back button
+        self.ui.AddTiming.clicked.connect(self.add_session)
+        self.ui.RemoveTiming.clicked.connect(self.remove_session)
+        self.ui.Save.clicked.connect(self.save_settings)
+        self.ui.BackHome.clicked.connect(self.go_back)  # Connect the back button
+
+        # Use existing widgets from the designer
+        self.OverrideDelay = self.ui.OverrideDelay
+        self.WarningMessage = self.ui.Warning  # Ensure this matches the widget name in your UI file
+
+        # Set initial values for override delay and warning message
+        self.OverrideDelay.setChecked(self.parent().override_delay)
+        self.WarningMessage.setPlainText(self.parent().warning_message)
+
+        self.OverrideDelay.stateChanged.connect(self.set_override_delay)
 
         # Add predefined wait times to the combo box
-        self.Delay.addItems(["5", "10", "15", "30"])
-
-        # Add OverrideDelay checkbox
-        self.OverrideDelay = QCheckBox("Override Delay")
-        self.OverrideDelay.setChecked(self.parent().override_delay)
-        self.OverrideDelay.stateChanged.connect(self.set_override_delay)
-        self.formLayout.addRow(self.OverrideDelay)
-
-        # Add Warning Message TextEdit
-        self.WarningMessage = QTextEdit()
-        self.WarningMessage.setPlainText(self.parent().warning_message)
-        self.formLayout.addRow("Warning Message:", self.WarningMessage)
-
+        self.ui.Delay.addItems(["5", "10", "15", "30"])
         self.reload_settings_page()  # Load initial settings
 
     def add_session(self):
-        start_time = self.Start.time()
-        end_time = self.End.time()
-        days = [self.monday.isChecked(), self.tuesday.isChecked(), self.wednesday.isChecked(),
-                self.thursday.isChecked(), self.friday.isChecked(), self.saturday.isChecked(),
-                self.sunday.isChecked()]
+        start_time = self.ui.Start.time()
+        end_time = self.ui.End.time()
+        days = [self.ui.monday.isChecked(), self.ui.tuesday.isChecked(), self.ui.wednesday.isChecked(),
+                self.ui.thursday.isChecked(), self.ui.friday.isChecked(), self.ui.saturday.isChecked(),
+                self.ui.sunday.isChecked()]
 
         session = {
             "start_time": start_time,
@@ -282,25 +279,25 @@ class SettingsPage(QMainWindow, Ui_Settings):
         self.update_sessions_list()
 
     def update_sessions_list(self):
-        self.ExistingRunTimes.clear()
+        self.ui.ExistingRunTimes.clear()
         for session in self.sessions:
             days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
             active_days = [days[i] for i, active in enumerate(session["days"]) if active]
             item_text = f"{session['start_time'].toString()} - {session['end_time'].toString()} : {', '.join(active_days)}"
-            self.ExistingRunTimes.addItem(item_text)
+            self.ui.ExistingRunTimes.addItem(item_text)
 
     def remove_session(self):
-        selected_items = self.ExistingRunTimes.selectedItems()
+        selected_items = self.ui.ExistingRunTimes.selectedItems()
         if not selected_items:
             return
         for item in selected_items:
-            index = self.ExistingRunTimes.row(item)
+            index = self.ui.ExistingRunTimes.row(item)
             del self.sessions[index]
-            self.ExistingRunTimes.takeItem(index)
+            self.ui.ExistingRunTimes.takeItem(index)
 
     def save_settings(self):
         # Save the settings, including the wait time
-        wait_time = self.Delay.currentText()
+        wait_time = self.ui.Delay.currentText()
         self.parent().set_wait_time(wait_time)
         self.parent().sessions = self.sessions
         self.parent().settings["sessions"] = self.sessions
@@ -316,19 +313,31 @@ class SettingsPage(QMainWindow, Ui_Settings):
         save_settings(self.parent().settings)
 
     def reload_settings_page(self):
+        # Reload settings from file to ensure the latest values are reflected
+        self.parent().settings = load_settings()
+
         # Clear and reload the settings page
         self.update_sessions_list()
         # Set the delay period to the currently saved wait time
         current_wait_time = self.parent().get_wait_time()
-        index = self.Delay.findText(current_wait_time)
+        index = self.ui.Delay.findText(current_wait_time)
         if index != -1:
-            self.Delay.setCurrentIndex(index)
+            self.ui.Delay.setCurrentIndex(index)
         # Set the override delay checkbox
-        self.OverrideDelay.setChecked(self.parent().override_delay)
+        self.OverrideDelay.setChecked(self.parent().settings["override_delay"])
         # Set the warning message text
-        self.WarningMessage.setPlainText(self.parent().warning_message)
+        self.WarningMessage.setPlainText(self.parent().settings["warning_message"])
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        # Reload the settings when the settings page is shown
+        self.reload_settings_page()
 
     def go_back(self):
+        # Update parent settings before going back
+        self.parent().override_delay = self.OverrideDelay.isChecked()
+        self.parent().warning_message = self.WarningMessage.toPlainText()
+
         self.parent().show()
         self.close()
 

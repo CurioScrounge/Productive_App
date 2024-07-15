@@ -1,5 +1,5 @@
 {
-    "wait_time": "15",
+    "wait_time": "5",
     "sessions": [
         {
             "start_time": "03:00",
@@ -28,5 +28,5 @@
         "https://docs.google.com/document/d/1oQD6JDB-mOEzy9PgrZpUVMTgDrRXym1w0uVZnDREvPk/edit"
     ],
     "override_delay": false,
-    "warning_message": "Unproductive activity detected! For your own good, please return to being productive!"
+    "warning_message": "You are straying towards the dark side... For your own good, please return to being productive!"
 }

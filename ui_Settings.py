@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'SettingsmmKKsS.ui'
+## Form generated from reading UI file 'SettingscLPpSk.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -344,11 +344,12 @@ class Ui_Settings(object):
 "}")
         self.label_11.setAlignment(Qt.AlignCenter)
         self.label_11.setWordWrap(True)
-        self.textEdit = QTextEdit(self.groupBox_2)
-        self.textEdit.setObjectName(u"textEdit")
-        self.textEdit.setGeometry(QRect(10, 90, 291, 141))
-        self.textEdit.setFont(font)
-        self.textEdit.setStyleSheet(u"QTextEdit{\n"
+        self.Warning = QTextEdit(self.groupBox_2)
+        self.Warning.setObjectName(u"Warning")
+        self.Warning.setGeometry(QRect(10, 90, 291, 141))
+        self.Warning.setFont(font)
+        self.Warning.setFocusPolicy(Qt.ClickFocus)
+        self.Warning.setStyleSheet(u"QTextEdit{\n"
 "	background-color: rgb(238, 238, 238);\n"
 "	color: rgb(55, 58, 64);\n"
 "}")
@@ -400,7 +401,7 @@ class Ui_Settings(object):
         self.OverrideDelay.setText(QCoreApplication.translate("Settings", u"Override Delay Period", None))
         self.label_10.setText(QCoreApplication.translate("Settings", u"OR immediately show warning message upon unproductive activity:", None))
         self.label_11.setText(QCoreApplication.translate("Settings", u"Warning Message", None))
-        self.textEdit.setHtml(QCoreApplication.translate("Settings", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+        self.Warning.setHtml(QCoreApplication.translate("Settings", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:'Segoe UI'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
