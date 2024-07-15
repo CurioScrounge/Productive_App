@@ -1,6 +1,6 @@
 import sys
 import json
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QVBoxLayout, QWidget, QLineEdit, QCheckBox, QListWidget, QFileDialog, QMessageBox, QSizePolicy, QTimeEdit, QComboBox, QFormLayout, QListWidgetItem
+from PyQt5.QtWidgets import QApplication, QMainWindow, QCheckBox, QListWidgetItem, QFileDialog, QMessageBox, QSizePolicy
 from PyQt5.QtCore import Qt, QTime, QTimer
 from PyQt5.QtGui import QFont
 from PyQt5 import QtCore
@@ -115,20 +115,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def populate_unproductive_categories(self):
         for category, examples in self.category_sites.items():
-            self.add_category(category, examples)
+            checkbox = QCheckBox(category)
+            tooltip_text = "Examples: " + ", ".join(examples)
+            checkbox.setToolTip(tooltip_text)
+            self.Categories.addWidget(checkbox)
+            checkbox.stateChanged.connect(lambda state, name=category: self.update_category_state(name, state))
 
-        for category_name, checked in self.categories.items():
-            for _, checkbox, _ in self.categories:
-                if checkbox.text() == category_name:
-                    checkbox.setChecked(checked)
-
-    def add_category(self, category_name, examples):
-        checkbox = QCheckBox(category_name)
-        tooltip_text = "Examples: " + ", ".join(examples)
-        checkbox.setToolTip(tooltip_text)
-        self.Categories.addWidget(checkbox)
-        self.categories[category_name] = checkbox.isChecked()
-        checkbox.stateChanged.connect(lambda state, name=category_name: self.update_category_state(name, state))
+            # Set the checkbox state based on the saved settings
+            if category in self.categories:
+                checkbox.setChecked(self.categories[category])
 
     def update_category_state(self, category_name, state):
         self.categories[category_name] = bool(state)
@@ -184,7 +179,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Apply the new font to all widgets
         widgets = [self.EditWhitelist, self.AddWhitelist, self.BrowseFile, self.Whitelist, self.RemoveWhitelist]
-        for category_name, checkbox, examples in self.categories.items():
+        for checkbox in self.Categories.findChildren(QCheckBox):
             checkbox.setFont(font)
         for widget in widgets:
             widget.setFont(font)

@@ -1,6 +1,16 @@
 {
-    "wait_time": "5",
+    "wait_time": "10",
     "sessions": [],
-    "categories": {},
-    "whitelisted_sites": []
+    "categories": {
+        "Social Media": true,
+        "Games": true,
+        "Video Entertainment": false,
+        "Visual Entertainment": false,
+        "Forums": false,
+        "Online Shopping": false,
+        "Productivity Killers": false
+    },
+    "whitelisted_sites": [
+        "https://docs.google.com/document/d/1oQD6JDB-mOEzy9PgrZpUVMTgDrRXym1w0uVZnDREvPk/edit"
+    ]
 }
