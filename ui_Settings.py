@@ -1,31 +1,34 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'SettingsULDYKq.ui'
+## Form generated from reading UI file 'SettingskDgNjW.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide2.QtCore import *
-from PySide2.QtGui import *
-from PySide2.QtWidgets import *
+from PyQt5.QtWidgets import *
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import (QCoreApplication, QPropertyAnimation, QDate, QDateTime, QMetaObject, QObject, QPoint, QRect, QSize, QTime, QUrl, Qt, QEvent)
+from PyQt5.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont, QFontDatabase, QIcon, QKeySequence, QLinearGradient, QPalette, QPainter, QPixmap, QRadialGradient)
 
 
-class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
-        if not MainWindow.objectName():
-            MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(974, 677)
+
+class Ui_Settings(object):
+    def setupUi(self, Settings):
+        if not Settings.objectName():
+            Settings.setObjectName(u"Settings")
+        Settings.resize(974, 677)
         font = QFont()
         font.setFamily(u"Segoe UI")
         font.setPointSize(10)
-        MainWindow.setFont(font)
-        MainWindow.setStyleSheet(u"QWidget{\n"
+        Settings.setFont(font)
+        Settings.setStyleSheet(u"QWidget{\n"
 "	background-color: rgb(55, 58, 64);\n"
 "}")
-        self.centralwidget = QWidget(MainWindow)
+        self.centralwidget = QWidget(Settings)
         self.centralwidget.setObjectName(u"centralwidget")
         font1 = QFont()
         font1.setFamily(u"Segoe UI")
@@ -297,7 +300,7 @@ class Ui_MainWindow(object):
 "	\n"
 "	background-color: rgb(220, 95, 0);\n"
 "}")
-        MainWindow.setCentralWidget(self.centralwidget)
+        Settings.setCentralWidget(self.centralwidget)
         self.groupBox_2.raise_()
         self.groupBox.raise_()
         self.ExistingRunTimes.raise_()
@@ -305,35 +308,35 @@ class Ui_MainWindow(object):
         self.RemoveTiming.raise_()
         self.BackHome.raise_()
 
-        self.retranslateUi(MainWindow)
+        self.retranslateUi(Settings)
 
-        QMetaObject.connectSlotsByName(MainWindow)
+        QMetaObject.connectSlotsByName(Settings)
     # setupUi
 
-    def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
+    def retranslateUi(self, Settings):
+        Settings.setWindowTitle(QCoreApplication.translate("Settings", u"MainWindow", None))
         self.groupBox.setTitle("")
-        self.label_3.setText(QCoreApplication.translate("MainWindow", u"Run Settings", None))
-        self.label_2.setText(QCoreApplication.translate("MainWindow", u"End Time", None))
-        self.label.setText(QCoreApplication.translate("MainWindow", u"Start Time", None))
-        self.label_4.setText(QCoreApplication.translate("MainWindow", u"Days to run", None))
-        self.monday.setText(QCoreApplication.translate("MainWindow", u"Monday", None))
-        self.tuesday.setText(QCoreApplication.translate("MainWindow", u"Tueday", None))
-        self.wednesday.setText(QCoreApplication.translate("MainWindow", u"Wednesday", None))
-        self.thursday.setText(QCoreApplication.translate("MainWindow", u"Thursday", None))
-        self.friday.setText(QCoreApplication.translate("MainWindow", u"Friday", None))
-        self.saturday.setText(QCoreApplication.translate("MainWindow", u"Saturday", None))
-        self.sunday.setText(QCoreApplication.translate("MainWindow", u"Sunday", None))
-        self.AddTiming.setText(QCoreApplication.translate("MainWindow", u"Add Setting", None))
-        self.RemoveTiming.setText(QCoreApplication.translate("MainWindow", u"Remove", None))
-        self.label_5.setText(QCoreApplication.translate("MainWindow", u"Defined Run Times", None))
+        self.label_3.setText(QCoreApplication.translate("Settings", u"Run Settings", None))
+        self.label_2.setText(QCoreApplication.translate("Settings", u"End Time", None))
+        self.label.setText(QCoreApplication.translate("Settings", u"Start Time", None))
+        self.label_4.setText(QCoreApplication.translate("Settings", u"Days to run", None))
+        self.monday.setText(QCoreApplication.translate("Settings", u"Monday", None))
+        self.tuesday.setText(QCoreApplication.translate("Settings", u"Tueday", None))
+        self.wednesday.setText(QCoreApplication.translate("Settings", u"Wednesday", None))
+        self.thursday.setText(QCoreApplication.translate("Settings", u"Thursday", None))
+        self.friday.setText(QCoreApplication.translate("Settings", u"Friday", None))
+        self.saturday.setText(QCoreApplication.translate("Settings", u"Saturday", None))
+        self.sunday.setText(QCoreApplication.translate("Settings", u"Sunday", None))
+        self.AddTiming.setText(QCoreApplication.translate("Settings", u"Add Setting", None))
+        self.RemoveTiming.setText(QCoreApplication.translate("Settings", u"Remove", None))
+        self.label_5.setText(QCoreApplication.translate("Settings", u"Defined Run Times", None))
         self.groupBox_2.setTitle("")
-        self.label_6.setText(QCoreApplication.translate("MainWindow", u"Warning Message Delay Period", None))
-        self.Delay.setItemText(0, QCoreApplication.translate("MainWindow", u"5", None))
+        self.label_6.setText(QCoreApplication.translate("Settings", u"Warning Message Delay Period", None))
+        self.Delay.setItemText(0, QCoreApplication.translate("Settings", u"5", None))
 
-        self.label_7.setText(QCoreApplication.translate("MainWindow", u"The program will until there has been", None))
-        self.label_8.setText(QCoreApplication.translate("MainWindow", u"minutes of continuous", None))
-        self.label_9.setText(QCoreApplication.translate("MainWindow", u"unproductive activity before warning you.", None))
-        self.BackHome.setText(QCoreApplication.translate("MainWindow", u"Back to Home", None))
+        self.label_7.setText(QCoreApplication.translate("Settings", u"The program will until there has been", None))
+        self.label_8.setText(QCoreApplication.translate("Settings", u"minutes of continuous", None))
+        self.label_9.setText(QCoreApplication.translate("Settings", u"unproductive activity before warning you.", None))
+        self.BackHome.setText(QCoreApplication.translate("Settings", u"Back to Home", None))
     # retranslateUi
 

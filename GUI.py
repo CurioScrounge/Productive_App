@@ -10,6 +10,7 @@ from PyQt5.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont, QFont
 ## ==> SPLASH SCREEN
 from ui_Splash import Ui_SplashScreen
 from ui_MainWindow import Ui_MainWindow
+from ui_Settings import Ui_Settings
 
 ## ==> GLOBALS
 counter = 0
@@ -144,6 +145,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return
         for item in selected_items:
             self.Whitelist.takeItem(self.Whitelist.row(item))
+
+
+
 
 
 if __name__ == "__main__":
