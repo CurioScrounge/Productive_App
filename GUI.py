@@ -12,6 +12,9 @@ from ui_Settings import Ui_Settings
 # File to store settings
 SETTINGS_FILE = 'settings.json'
 
+ScreenHeight=750
+ScreenWidth=1100
+
 # Load settings from file
 def load_settings():
     try:
@@ -98,6 +101,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        
+        #set fixed screen size, keeps ui and such safe
+        self.setFixedSize(ScreenWidth, ScreenHeight)
 
         # Load settings
         self.settings = load_settings()
@@ -241,6 +247,8 @@ class SettingsPage(QMainWindow, Ui_Settings):
         self.ui = Ui_Settings()
         self.ui.setupUi(self)
         self.sessions = self.parent().sessions
+        
+        self.setFixedSize(ScreenWidth, ScreenHeight)
 
         # Connect buttons
         self.ui.AddTiming.clicked.connect(self.add_session)

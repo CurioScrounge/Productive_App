@@ -13,6 +13,19 @@
                 false,
                 false
             ]
+        },
+        {
+            "start_time": "12:00",
+            "end_time": "17:00",
+            "days": [
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true
+            ]
         }
     ],
     "categories": {
@@ -24,9 +37,7 @@
         "Online Shopping": false,
         "Productivity Killers": false
     },
-    "whitelisted_sites": [
-        "https://docs.google.com/document/d/1oQD6JDB-mOEzy9PgrZpUVMTgDrRXym1w0uVZnDREvPk/edit"
-    ],
+    "whitelisted_sites": [],
     "override_delay": false,
     "warning_message": "You are straying towards the dark side... For your own good, please return to being productive!"
 }
