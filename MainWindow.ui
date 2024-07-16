@@ -408,7 +408,7 @@ background-color: rgb(104, 109, 118);
       <bool>false</bool>
      </property>
     </widget>
-    <widget class="QPushButton" name="RemoveWhitelist_2">
+    <widget class="QPushButton" name="RemoveBlacklist">
      <property name="geometry">
       <rect>
        <x>660</x>

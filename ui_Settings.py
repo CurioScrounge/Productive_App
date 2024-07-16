@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'SettingsbsGNRQ.ui'
+## Form generated from reading UI file 'SettingsQFYKLK.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import *
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import (QCoreApplication, QPropertyAnimation, QDate, QDateTime, QMetaObject, QObject, QPoint, QRect, QSize, QTime, QUrl, Qt, QEvent)
 from PyQt5.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont, QFontDatabase, QIcon, QKeySequence, QLinearGradient, QPalette, QPainter, QPixmap, QRadialGradient)
+
 
 class Ui_Settings(object):
     def setupUi(self, Settings):
@@ -299,12 +300,7 @@ class Ui_Settings(object):
         self.OverrideDelay = QCheckBox(self.groupBox_2)
         self.OverrideDelay.setObjectName(u"OverrideDelay")
         self.OverrideDelay.setGeometry(QRect(20, 490, 231, 41))
-        font11 = QFont()
-        font11.setFamily(u"Segoe UI")
-        font11.setPointSize(11)
-        font11.setBold(True)
-        font11.setWeight(75)
-        self.OverrideDelay.setFont(font11)
+        self.OverrideDelay.setFont(font10)
         self.OverrideDelay.setStyleSheet(u"QCheckBox{\n"
 "	\n"
 "	color: rgb(220, 95, 0);\n"
@@ -338,19 +334,19 @@ class Ui_Settings(object):
         self.label_12 = QLabel(self.groupBox_2)
         self.label_12.setObjectName(u"label_12")
         self.label_12.setGeometry(QRect(10, 60, 261, 20))
-        font12 = QFont()
-        font12.setPointSize(11)
-        self.label_12.setFont(font12)
+        font11 = QFont()
+        font11.setPointSize(11)
+        self.label_12.setFont(font11)
         self.label_12.setStyleSheet(u"QLabel{\n"
 "	color: rgb(238, 238, 238);\n"
 "}")
         self.Save = QPushButton(self.groupBox_2)
         self.Save.setObjectName(u"Save")
         self.Save.setGeometry(QRect(280, 590, 61, 31))
-        font13 = QFont()
-        font13.setFamily(u"Segoe UI")
-        font13.setPointSize(9)
-        self.Save.setFont(font13)
+        font12 = QFont()
+        font12.setFamily(u"Segoe UI")
+        font12.setPointSize(9)
+        self.Save.setFont(font12)
         self.Save.setStyleSheet(u"QPushButton{\n"
 "	color: rgb(238, 238, 238);\n"
 "\n"

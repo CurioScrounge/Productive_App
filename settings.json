@@ -38,6 +38,7 @@
         "Productivity Killers": false
     },
     "whitelisted_sites": [],
+    "blacklisted_sites": [],
     "override_delay": false,
     "warning_message": "You are straying towards the dark side... For your own good, please return to being productive!"
 }

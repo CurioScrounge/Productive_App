@@ -4,6 +4,17 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QCheckBox, QListWidgetIte
 from PyQt5.QtCore import Qt, QTime, QTimer, QElapsedTimer
 from PyQt5 import QtCore
 
+#
+import time
+import threading
+import selenium
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+
 # Import the generated UI files
 from ui_Splash import Ui_SplashScreen
 from ui_MainWindow import Ui_MainWindow
@@ -11,10 +22,8 @@ from ui_Settings import Ui_Settings
 
 # File to store settings
 SETTINGS_FILE = 'settings.json'
-
-ScreenHeight=750
 ScreenWidth=1100
-
+ScreenHeight=750
 # Load settings from file
 def load_settings():
     try:
@@ -33,6 +42,7 @@ def load_settings():
             "sessions": [],
             "categories": {},
             "whitelisted_sites": [],
+            "blacklisted_sites": [],
             "override_delay": False,
             "warning_message": "Unproductive activity detected! For your own good, please return to being productive!"
         }
@@ -52,6 +62,7 @@ def save_settings(settings):
         ],
         "categories": settings["categories"],
         "whitelisted_sites": settings["whitelisted_sites"],
+        "blacklisted_sites": settings["blacklisted_sites"],
         "override_delay": settings.get("override_delay", False),
         "warning_message": settings.get("warning_message", "Unproductive activity detected! For your own good, please return to being productive!")
     }
@@ -101,8 +112,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        
-        #set fixed screen size, keeps ui and such safe
+
+        # Set fixed size for the main window
         self.setFixedSize(ScreenWidth, ScreenHeight)
 
         # Load settings
@@ -111,17 +122,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.sessions = self.settings.get("sessions", [])
         self.categories = self.settings.get("categories", {})
         self.whitelisted_sites = self.settings.get("whitelisted_sites", [])
+        self.blacklisted_sites = self.settings.get("blacklisted_sites", [])
         self.override_delay = self.settings.get("override_delay", False)
         self.warning_message = self.settings.get("warning_message", "Unproductive activity detected! For your own good, please return to being productive!")
+
+        # Machine learning components
+        self.vectorizer = TfidfVectorizer()
+        self.model = LogisticRegression()
 
         # Track unproductive activity
         self.unproductive_flag = False
         self.unproductive_timer = QElapsedTimer()
+        
+        # Train initial model
+        self.train_model()
+
+        # Start website monitoring
+        self.start_monitoring()
 
         # Connect signals to slots
         self.AddWhitelist.clicked.connect(self.add_to_whitelist)
         self.BrowseFile.clicked.connect(self.browse_file)
         self.RemoveWhitelist.clicked.connect(self.remove_selected_from_whitelist)
+        self.AddBlacklist.clicked.connect(self.add_to_blacklist)
+        self.BrowseFile_2.clicked.connect(self.browse_file_blacklist)
+        self.RemoveBlacklist.clicked.connect(self.remove_selected_from_blacklist)
         self.Settings.clicked.connect(self.open_settings)
 
         # Example categories and sites
@@ -135,11 +160,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             "Productivity Killers": ["nytimes.com/games/wordle", "nytimes.com/puzzles/spelling-bee", "nytimes.com/crosswords/game/mini"]
         }
 
-        # Populate unproductive categories with checkboxes and tooltips
+        # Populate unproductive categories with customized checkboxes
         self.populate_unproductive_categories()
 
         # Populate whitelisted sites
         self.populate_whitelisted_sites()
+
+        # Populate blacklisted sites
+        self.populate_blacklisted_sites()
 
         # Timer to check the current time against sessions
         self.timer = QtCore.QTimer()
@@ -149,6 +177,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def populate_unproductive_categories(self):
         for category, examples in self.category_sites.items():
             checkbox = QCheckBox(category)
+            # Customize the checkbox font and style
+            checkbox.setStyleSheet("""
+                QCheckBox {
+                    font-family: 'Segoe UI';
+                    font-size: 13pt;
+                    color: #DC5F00;
+                    background: transparent;
+                }
+            """)
             tooltip_text = "Examples: " + ", ".join(examples)
             checkbox.setToolTip(tooltip_text)
             self.Categories.addWidget(checkbox)
@@ -195,6 +232,39 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.settings["whitelisted_sites"] = self.whitelisted_sites
             save_settings(self.settings)
             self.Whitelist.takeItem(self.Whitelist.row(item))
+
+    def populate_blacklisted_sites(self):
+        for site in self.blacklisted_sites:
+            item = QListWidgetItem(site)
+            self.Blacklist.addItem(item)
+
+    def add_to_blacklist(self):
+        url = self.EditBlacklist.text()
+        if url:
+            item = QListWidgetItem(url)
+            self.Blacklist.addItem(item)
+            self.blacklisted_sites.append(url)
+            self.settings["blacklisted_sites"] = self.blacklisted_sites
+            save_settings(self.settings)
+            self.EditBlacklist.clear()
+        else:
+            QMessageBox.warning(self, "Input Error", "Please enter a website or file address to blacklist.")
+
+    def browse_file_blacklist(self):
+        file_path, _ = QFileDialog.getOpenFileName(self, "Select File to Blacklist")
+        if file_path:
+            self.EditBlacklist.setText(file_path)
+
+    def remove_selected_from_blacklist(self):
+        selected_items = self.Blacklist.selectedItems()
+        if not selected_items:
+            QMessageBox.warning(self, "Selection Error", "Please select an item to remove.")
+            return
+        for item in selected_items:
+            self.blacklisted_sites.remove(item.text())
+            self.settings["blacklisted_sites"] = self.blacklisted_sites
+            save_settings(self.settings)
+            self.Blacklist.takeItem(self.Blacklist.row(item))
 
     def open_settings(self):
         self.settings_page = SettingsPage(self)
@@ -247,7 +317,8 @@ class SettingsPage(QMainWindow, Ui_Settings):
         self.ui = Ui_Settings()
         self.ui.setupUi(self)
         self.sessions = self.parent().sessions
-        
+
+        # Set fixed size for the settings
         self.setFixedSize(ScreenWidth, ScreenHeight)
 
         # Connect buttons

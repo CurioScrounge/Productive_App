@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'MainWindowYkvOhc.ui'
+## Form generated from reading UI file 'MainWindowwpONbE.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -177,13 +177,13 @@ class Ui_MainWindow(object):
 "}")
         self.AddBlacklist.setCheckable(False)
         self.AddBlacklist.setFlat(False)
-        self.RemoveWhitelist_2 = QPushButton(self.groupBox_2)
-        self.RemoveWhitelist_2.setObjectName(u"RemoveWhitelist_2")
-        self.RemoveWhitelist_2.setGeometry(QRect(660, 450, 31, 31))
-        sizePolicy.setHeightForWidth(self.RemoveWhitelist_2.sizePolicy().hasHeightForWidth())
-        self.RemoveWhitelist_2.setSizePolicy(sizePolicy)
-        self.RemoveWhitelist_2.setFont(font5)
-        self.RemoveWhitelist_2.setStyleSheet(u"QPushButton{\n"
+        self.RemoveBlacklist = QPushButton(self.groupBox_2)
+        self.RemoveBlacklist.setObjectName(u"RemoveBlacklist")
+        self.RemoveBlacklist.setGeometry(QRect(660, 450, 31, 31))
+        sizePolicy.setHeightForWidth(self.RemoveBlacklist.sizePolicy().hasHeightForWidth())
+        self.RemoveBlacklist.setSizePolicy(sizePolicy)
+        self.RemoveBlacklist.setFont(font5)
+        self.RemoveBlacklist.setStyleSheet(u"QPushButton{\n"
 "	\n"
 "	color: rgb(220, 95, 0); \n"
 "\n"
@@ -247,7 +247,7 @@ class Ui_MainWindow(object):
         self.RemoveWhitelist.setText(QCoreApplication.translate("MainWindow", u"-", None))
         self.BrowseFile_2.setText(QCoreApplication.translate("MainWindow", u"File", None))
         self.AddBlacklist.setText(QCoreApplication.translate("MainWindow", u"Enter", None))
-        self.RemoveWhitelist_2.setText(QCoreApplication.translate("MainWindow", u"-", None))
+        self.RemoveBlacklist.setText(QCoreApplication.translate("MainWindow", u"-", None))
         self.EditBlacklist.setText("")
         self.EditBlacklist.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Enter a website link or click on the 'File' button to blacklist a local file", None))
         self.label_3.setText(QCoreApplication.translate("MainWindow", u"Blacklisted Websites", None))
