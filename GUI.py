@@ -1,19 +1,21 @@
+ 
+    
+    
+    
+    
+    
+    
 import sys
 import json
 from PyQt5.QtWidgets import QApplication, QMainWindow, QCheckBox, QListWidgetItem, QFileDialog, QMessageBox, QTextEdit
 from PyQt5.QtCore import Qt, QTime, QTimer, QElapsedTimer
 from PyQt5 import QtCore
-
-#
-import time
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.naive_bayes import MultinomialNB
+import requests
+from bs4 import BeautifulSoup
+import re
 import threading
-import selenium
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import LogisticRegression
 
 # Import the generated UI files
 from ui_Splash import Ui_SplashScreen
@@ -22,8 +24,9 @@ from ui_Settings import Ui_Settings
 
 # File to store settings
 SETTINGS_FILE = 'settings.json'
-ScreenWidth=1100
-ScreenHeight=750
+ScreenWidth = 1100
+ScreenHeight = 750
+
 # Load settings from file
 def load_settings():
     try:
@@ -126,19 +129,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.override_delay = self.settings.get("override_delay", False)
         self.warning_message = self.settings.get("warning_message", "Unproductive activity detected! For your own good, please return to being productive!")
 
-        # Machine learning components
-        self.vectorizer = TfidfVectorizer()
-        self.model = LogisticRegression()
-
         # Track unproductive activity
         self.unproductive_flag = False
         self.unproductive_timer = QElapsedTimer()
-        
-        # Train initial model
-        self.train_model()
-
-        # Start website monitoring
-        self.start_monitoring()
 
         # Connect signals to slots
         self.AddWhitelist.clicked.connect(self.add_to_whitelist)
@@ -174,6 +167,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.timer.timeout.connect(self.check_sessions)
         self.timer.start(60000)  # Check every minute
 
+        # Initialize the machine learning model
+        self.vectorizer = CountVectorizer()
+        self.model = MultinomialNB()
+
+        # Train the model
+        self.train_model()
+
+        
+
     def populate_unproductive_categories(self):
         for category, examples in self.category_sites.items():
             checkbox = QCheckBox(category)
@@ -199,6 +201,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.categories[category_name] = bool(state)
         self.settings["categories"] = self.categories
         save_settings(self.settings)
+        self.train_model()  # Retrain the model when categories change
 
     def populate_whitelisted_sites(self):
         for site in self.whitelisted_sites:
@@ -285,12 +288,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         for session in self.sessions:
             if session["days"][current_day]:
-                if session["start_time"] <= current_time <= session["end_time"]:
-                    self.detect_unproductive_activity()
+                while session["start_time"] <= current_time <= session["end_time"]:
+                    # Timer to check website activity
+                    self.activity_timer = QTimer()
+                    self.activity_timer.timeout.connect(self.monitor_activity)
+                    self.activity_timer.start(30000)  # Check every 20 seconds
+
+    def monitor_activity(self):
+        threading.Thread(target=self.detect_unproductive_activity).start()
 
     def detect_unproductive_activity(self):
         # Logic to detect unproductive activity
-        if self.is_unproductive_activity_detected():
+        current_website = self.get_current_website()
+        if current_website in self.whitelisted_sites:
+            self.unproductive_flag = False
+            return
+        if current_website in self.blacklisted_sites:
+            self.unproductive_flag = True
+        else:
+            self.unproductive_flag = self.predict_unproductive(current_website)
+
+        if self.unproductive_flag:
             if self.override_delay:
                 self.send_warning_message()
             else:
@@ -303,14 +321,51 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             self.unproductive_flag = False
 
-    def is_unproductive_activity_detected(self):
-        # Replace with actual logic to detect unproductive activity
-        return True
+    def predict_unproductive(self, website):
+        # Predict if the website is unproductive using the trained model
+        website_content = self.fetch_website_content(website)
+        if not website_content:
+            return False
+        prediction = self.model.predict(self.vectorizer.transform([website_content]))
+        return prediction[0] == "unproductive"
+
+    def fetch_website_content(self, url):
+        # Fetch the website content for classification
+        try:
+            response = requests.get("http://" + url)
+            soup = BeautifulSoup(response.text, 'html.parser')
+            return ' '.join(re.findall(r'\w+', soup.get_text().lower()))
+        except Exception as e:
+            print(f"Error fetching website content: {e}")
+            return None
+
+    def train_model(self):
+        # Train the machine learning model based on user-selected categories
+        data = []
+        labels = []
+        for category, examples in self.category_sites.items():
+            if self.categories.get(category):
+                for site in examples:
+                    content = self.fetch_website_content(site)
+                    if content:
+                        data.append(content)
+                        labels.append("unproductive")
+        for site in self.whitelisted_sites:
+            content = self.fetch_website_content(site)
+            if content:
+                data.append(content)
+                labels.append("productive")
+        self.vectorizer.fit(data)
+        self.model.fit(self.vectorizer.transform(data), labels)
+
+    def get_current_website(self):
+        # Placeholder for getting the current website the user is visiting
+        # This needs to be implemented using a browser extension or similar method
+        return "example.com"
 
     def send_warning_message(self):
         QMessageBox.warning(self, "Warning", self.warning_message)
 
-# Settings Page Class
 class SettingsPage(QMainWindow, Ui_Settings):
     def __init__(self, parent=None):
         super().__init__(parent)
