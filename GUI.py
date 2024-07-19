@@ -1,7 +1,7 @@
 import sys
 import json
 from PyQt5.QtWidgets import QApplication, QMainWindow, QCheckBox, QListWidgetItem, QFileDialog, QMessageBox, QTextEdit
-from PyQt5.QtCore import Qt, QTime, QTimer, QElapsedTimer
+from PyQt5.QtCore import Qt, QTime, QTimer, QElapsedTimer, pyqtSignal, QObject, QThread, QMetaObject
 from PyQt5 import QtCore
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
@@ -9,7 +9,9 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import threading
-from flask_server import start_flask_server, current_url
+import pyperclip  # Clipboard handling
+import subprocess
+import time
 
 # Import the generated UI files
 from ui_Splash import Ui_SplashScreen
@@ -18,8 +20,11 @@ from ui_Settings import Ui_Settings
 
 # File to store settings
 SETTINGS_FILE = 'settings.json'
-ScreenWidth = 1100
-ScreenHeight = 750
+SCREEN_WIDTH = 1100
+SCREEN_HEIGHT = 750
+
+# Start the URL capture script
+subprocess.Popen(["python", "capture_url.py"])
 
 # Load settings from file
 def load_settings():
@@ -39,6 +44,7 @@ def load_settings():
             "categories": {},
             "whitelisted_sites": [],
             "blacklisted_sites": [],
+            "productive_sites": [],  # Initialize productive_sites
             "override_delay": False,
             "warning_message": "Unproductive activity detected! For your own good, please return to being productive!"
         }
@@ -58,6 +64,7 @@ def save_settings(settings):
         "categories": settings["categories"],
         "whitelisted_sites": settings["whitelisted_sites"],
         "blacklisted_sites": settings["blacklisted_sites"],
+        "productive_sites": settings.get("productive_sites", []),  # Save productive_sites
         "override_delay": settings.get("override_delay", False),
         "warning_message": settings.get("warning_message", "Unproductive activity detected! For your own good, please return to being productive!")
     }
@@ -66,6 +73,21 @@ def save_settings(settings):
 
 # Global counter for the splash screen
 counter = 0
+
+class Worker(QObject):
+    url_captured = pyqtSignal(str)
+
+    def run(self):
+        previous_url = ""
+        while True:
+            current_url = pyperclip.paste()  # Read from clipboard
+            print(f"Clipboard content: {current_url}")  # Debug logging
+            if current_url and (current_url.startswith("http://") or current_url.startswith("https://")) and current_url != previous_url:
+                previous_url = current_url
+                self.url_captured.emit(current_url)
+            else:
+                print(f"Clipboard URL unchanged: {current_url}")
+            time.sleep(2)  # Check every 2 seconds
 
 # Splash Screen Class
 class SplashScreen(QMainWindow):
@@ -106,7 +128,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.vectorizer = CountVectorizer()
         self.model = MultinomialNB()
 
-        self.setFixedSize(ScreenWidth, ScreenHeight)
+        self.setFixedSize(SCREEN_WIDTH, SCREEN_HEIGHT)
 
         self.settings = load_settings()
         self.wait_time = self.settings.get("wait_time", "5")
@@ -114,11 +136,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.categories = self.settings.get("categories", {})
         self.whitelisted_sites = self.settings.get("whitelisted_sites", [])
         self.blacklisted_sites = self.settings.get("blacklisted_sites", [])
+        self.productive_sites = self.settings.get("productive_sites", [])  # Load productive_sites
         self.override_delay = self.settings.get("override_delay", False)
         self.warning_message = self.settings.get("warning_message", "Unproductive activity detected! For your own good, please return to being productive!")
 
         self.unproductive_flag = False
         self.unproductive_timer = QElapsedTimer()
+        self.warning_displayed = False  # Flag to indicate if a warning is displayed
 
         self.AddWhitelist.clicked.connect(self.add_to_whitelist)
         self.BrowseFile.clicked.connect(self.browse_file)
@@ -146,16 +170,65 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.timer.timeout.connect(self.check_sessions)
         self.timer.start(30000)  # Check every 30 seconds
 
-        # Train the model
+         # Train the model
         self.train_model()
-
-        # Start the Flask server to receive current URL from the browser extension
-        start_flask_server()
 
         # Monitor activity every 20 seconds
         self.activity_timer = QTimer()
         self.activity_timer.timeout.connect(self.monitor_activity)
         self.activity_timer.start(20000)
+
+        # Setup worker thread
+        self.worker = Worker()
+        self.worker_thread = QThread()
+        self.worker.moveToThread(self.worker_thread)
+        
+        self.worker.url_captured.connect(self.handle_captured_url)
+        self.worker_thread.started.connect(self.worker.run)
+        self.worker_thread.start()
+
+    def handle_captured_url(self, url):
+        print(f"Handling captured URL: {url}")
+        current_website = url
+        if current_website:
+            if current_website in self.whitelisted_sites:
+                self.unproductive_flag = False
+                return
+            if current_website in self.blacklisted_sites:
+                self.unproductive_flag = True
+            else:
+                self.unproductive_flag = self.predict_unproductive(current_website)
+
+            if self.unproductive_flag:
+                if self.override_delay:
+                    self.display_warning_message()
+                else:
+                    if not self.unproductive_flag:
+                        self.unproductive_flag = True
+                        self.unproductive_timer.start()
+                    elif self.unproductive_timer.elapsed() >= int(self.wait_time) * 60000:
+                        self.display_warning_message()
+                        self.unproductive_flag = False
+            else:
+                self.unproductive_flag = False
+        else:
+            print("No current website detected.")
+
+    def display_warning_message(self):
+        if not self.warning_displayed:
+            self.warning_displayed = True
+            QMetaObject.invokeMethod(self, "show_warning_message", Qt.QueuedConnection)
+
+    @QtCore.pyqtSlot()
+    def show_warning_message(self):
+        msg_box = QMessageBox(QMessageBox.Warning, "Warning", self.warning_message)
+        msg_box.setModal(True)
+        msg_box.finished.connect(self.on_warning_closed)
+        msg_box.exec_()  # This makes the message box modal
+
+    @QtCore.pyqtSlot()
+    def on_warning_closed(self):
+        self.warning_displayed = False
 
     def populate_unproductive_categories(self):
         for category, examples in self.category_sites.items():
@@ -286,13 +359,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             if self.unproductive_flag:
                 if self.override_delay:
-                    self.send_warning_message()
+                    self.display_warning_message()
                 else:
                     if not self.unproductive_flag:
                         self.unproductive_flag = True
                         self.unproductive_timer.start()
                     elif self.unproductive_timer.elapsed() >= int(self.wait_time) * 60000:
-                        self.send_warning_message()
+                        self.display_warning_message()
                         self.unproductive_flag = False
             else:
                 self.unproductive_flag = False
@@ -320,6 +393,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def train_model(self):
         data = []
         labels = []
+        # Add unproductive sites from category_sites
         for category, examples in self.category_sites.items():
             if self.categories.get(category):
                 for site in examples:
@@ -327,7 +401,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     if content:
                         data.append(content)
                         labels.append("unproductive")
+        # Add whitelisted sites as productive
         for site in self.whitelisted_sites:
+            content = self.fetch_website_content("http://" + site)
+            if content:
+                data.append(content)
+                labels.append("productive")
+        # Add manually specified productive sites
+        for site in self.productive_sites:
             content = self.fetch_website_content("http://" + site)
             if content:
                 data.append(content)
@@ -336,13 +417,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.model.fit(self.vectorizer.transform(data), labels)
 
     def get_current_website(self):
-        global current_url
-        print(f"Current URL: {current_url}")  # Debug logging
-        return current_url
+        current_url = pyperclip.paste()  # Read from clipboard
+        print(f"Clipboard content: {current_url}")  # Debug logging
+        if current_url and (current_url.startswith("http://") or current_url.startswith("https://")):
+            return current_url
+        else:
+            print("Clipboard does not contain a valid URL")
+            return None
 
     def send_warning_message(self):
-        QMessageBox.warning(self, "Warning", self.warning_message)
-
+            self.warning_displayed = True
+            QMetaObject.invokeMethod(self, "show_warning_message", Qt.QueuedConnection)
+            self.warning_displayed = False
+            
 # Settings Page Class
 class SettingsPage(QMainWindow, Ui_Settings):
     def __init__(self, parent=None):
@@ -351,7 +438,7 @@ class SettingsPage(QMainWindow, Ui_Settings):
         self.ui.setupUi(self)
         self.sessions = self.parent().sessions
 
-        self.setFixedSize(ScreenWidth, ScreenHeight)
+        self.setFixedSize(SCREEN_WIDTH, SCREEN_HEIGHT)
 
         self.ui.AddTiming.clicked.connect(self.add_session)
         self.ui.RemoveTiming.clicked.connect(self.remove_session)

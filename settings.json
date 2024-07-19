@@ -52,6 +52,12 @@
     },
     "whitelisted_sites": [],
     "blacklisted_sites": [],
+    "productive_sites": [
+        "docs.google.com",
+        "slides.google.com",
+        "mail.google.com",
+        "scholar.google.com"
+    ],
     "override_delay": false,
     "warning_message": "You are straying towards the dark side... For your own good, please return to being productive!"
 }
