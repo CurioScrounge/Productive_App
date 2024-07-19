@@ -22,6 +22,7 @@ def get_browser_url(window_title):
             app = Desktop(backend="uia").window(title_re=".*Microsoft Edge.*")
             url = app.child_window(title="Address and search bar", control_type="Edit").get_value()
         else:
+            print(f"No matching browser found in window title: {window_title}")
             return None
 
         parsed_url = urlparse(url)
@@ -37,17 +38,21 @@ def monitor_active_window():
     previous_url = ""
     while True:
         current_window_title = get_active_window_title()
-        if current_window_title != previous_window_title:
-            previous_window_title = current_window_title
-            if any(browser in current_window_title for browser in ["Google Chrome", "Mozilla Firefox", "Microsoft Edge"]):
-                current_url = get_browser_url(current_window_title)
-                if current_url and current_url != previous_url:
-                    previous_url = current_url
-                    pyperclip.copy(current_url)
-                    print(f"Copied URL: {current_url}")
-                elif current_url:
-                    print(f"URL unchanged: {current_url}")
-        time.sleep(2)  # Check every 2 seconds
+        if current_window_title:
+            print(f"Current window title: {current_window_title}")  # Debug logging
+            if current_window_title != previous_window_title:
+                previous_window_title = current_window_title
+                if any(browser in current_window_title for browser in ["Google Chrome", "Mozilla Firefox", "Microsoft Edge"]):
+                    current_url = get_browser_url(current_window_title)
+                    if current_url and current_url != previous_url:
+                        previous_url = current_url
+                        pyperclip.copy(current_url)
+                        print(f"Copied URL: {current_url}")
+                    elif current_url:
+                        print(f"URL unchanged: {current_url}")
+        else:
+            print("No active window detected.")
+        time.sleep(5)  # Check every 5 seconds
 
 if __name__ == "__main__":
     print("Starting URL capture script...")

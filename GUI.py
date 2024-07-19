@@ -1,7 +1,7 @@
 import sys
 import json
-from PyQt5.QtWidgets import QApplication, QMainWindow, QCheckBox, QListWidgetItem, QFileDialog, QMessageBox, QTextEdit
-from PyQt5.QtCore import Qt, QTime, QTimer, QElapsedTimer, pyqtSignal, QObject, QThread, QMetaObject
+from PyQt5.QtWidgets import QApplication, QMainWindow, QCheckBox, QListWidgetItem, QFileDialog, QDialog, QLabel, QVBoxLayout, QPushButton, QMessageBox
+from PyQt5.QtCore import Qt, QTime, QTimer, QElapsedTimer, pyqtSignal, QObject, QThread, QMetaObject, Q_ARG
 from PyQt5 import QtCore
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
@@ -71,9 +71,6 @@ def save_settings(settings):
     with open(SETTINGS_FILE, 'w') as f:
         json.dump(settings_copy, f, indent=4)
 
-# Global counter for the splash screen
-counter = 0
-
 class Worker(QObject):
     url_captured = pyqtSignal(str)
 
@@ -99,6 +96,9 @@ class SplashScreen(QMainWindow):
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
 
+        # Define counter as an instance variable
+        self.counter = 0
+
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.progress)
         self.timer.start(25)  # Timer in milliseconds
@@ -106,17 +106,16 @@ class SplashScreen(QMainWindow):
         self.show()
 
     def progress(self):
-        global counter
+        self.ui.progressBar.setValue(self.counter)
 
-        self.ui.progressBar.setValue(counter)
-
-        if counter > 100:
+        if self.counter > 200:
             self.timer.stop()
             self.main = MainWindow()
             self.main.show()
             self.close()
 
-        counter += 1
+        self.counter += 1
+
 
 # Main Window Class
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -131,7 +130,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setFixedSize(SCREEN_WIDTH, SCREEN_HEIGHT)
 
         self.settings = load_settings()
-        self.wait_time = self.settings.get("wait_time", "5")
+        self.wait_time = int(self.settings.get("wait_time", "5"))
         self.sessions = self.settings.get("sessions", [])
         self.categories = self.settings.get("categories", {})
         self.whitelisted_sites = self.settings.get("whitelisted_sites", [])
@@ -170,7 +169,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.timer.timeout.connect(self.check_sessions)
         self.timer.start(30000)  # Check every 30 seconds
 
-         # Train the model
+        # Train the model
         self.train_model()
 
         # Monitor activity every 20 seconds
@@ -203,14 +202,41 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 if self.override_delay:
                     self.display_warning_message()
                 else:
-                    if not self.unproductive_flag:
-                        self.unproductive_flag = True
+                    if not self.unproductive_timer.isValid():
                         self.unproductive_timer.start()
-                    elif self.unproductive_timer.elapsed() >= int(self.wait_time) * 60000:
+                    elif self.unproductive_timer.elapsed() >= self.wait_time * 60000:
                         self.display_warning_message()
-                        self.unproductive_flag = False
+                        self.unproductive_timer.invalidate()
             else:
                 self.unproductive_flag = False
+                self.unproductive_timer.invalidate()
+        else:
+            print("No current website detected.")
+
+    def detect_unproductive_activity(self):
+        current_website = self.get_current_website()
+        if current_website:
+            if current_website in self.whitelisted_sites:
+                self.unproductive_flag = False
+                self.unproductive_timer.invalidate()
+                return
+            if current_website in self.blacklisted_sites:
+                self.unproductive_flag = True
+            else:
+                self.unproductive_flag = self.predict_unproductive(current_website)
+
+            if self.unproductive_flag:
+                if self.override_delay:
+                    self.display_warning_message()
+                else:
+                    if not self.unproductive_timer.isValid():
+                        self.unproductive_timer.start()
+                    elif self.unproductive_timer.elapsed() >= self.wait_time * 60000:
+                        self.display_warning_message()
+                        self.unproductive_timer.invalidate()
+            else:
+                self.unproductive_flag = False
+                self.unproductive_timer.invalidate()
         else:
             print("No current website detected.")
 
@@ -221,10 +247,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     @QtCore.pyqtSlot()
     def show_warning_message(self):
-        msg_box = QMessageBox(QMessageBox.Warning, "Warning", self.warning_message)
-        msg_box.setModal(True)
-        msg_box.finished.connect(self.on_warning_closed)
-        msg_box.exec_()  # This makes the message box modal
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Warning")
+        dialog.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint)
+        dialog.showFullScreen()
+
+        layout = QVBoxLayout(dialog)
+        label = QLabel(self.warning_message, dialog)
+        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        label.setStyleSheet("font-size: 24px; color: red;")
+        layout.addWidget(label)
+
+        close_button = QPushButton("Close", dialog)
+        close_button.setStyleSheet("font-size: 18px; padding: 10px;")
+        close_button.clicked.connect(dialog.accept)
+        layout.addWidget(close_button)
+
+        dialog.finished.connect(self.on_warning_closed)
+        dialog.exec_()  # This makes the dialog modal
 
     @QtCore.pyqtSlot()
     def on_warning_closed(self):
@@ -327,7 +367,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.hide()
 
     def set_wait_time(self, wait_time):
-        self.wait_time = wait_time
+        self.wait_time = int(wait_time)
         self.settings["wait_time"] = wait_time
         save_settings(self.settings)
 
@@ -342,35 +382,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if session["days"][current_day]:
                 if session["start_time"] <= current_time <= session["end_time"]:
                     self.monitor_activity()
+                    return  # Exit after finding the first active session
 
     def monitor_activity(self):
         threading.Thread(target=self.detect_unproductive_activity).start()
-
-    def detect_unproductive_activity(self):
-        current_website = self.get_current_website()
-        if current_website:
-            if current_website in self.whitelisted_sites:
-                self.unproductive_flag = False
-                return
-            if current_website in self.blacklisted_sites:
-                self.unproductive_flag = True
-            else:
-                self.unproductive_flag = self.predict_unproductive(current_website)
-
-            if self.unproductive_flag:
-                if self.override_delay:
-                    self.display_warning_message()
-                else:
-                    if not self.unproductive_flag:
-                        self.unproductive_flag = True
-                        self.unproductive_timer.start()
-                    elif self.unproductive_timer.elapsed() >= int(self.wait_time) * 60000:
-                        self.display_warning_message()
-                        self.unproductive_flag = False
-            else:
-                self.unproductive_flag = False
-        else:
-            print("No current website detected.")
 
     def predict_unproductive(self, website):
         website_content = self.fetch_website_content(website)
@@ -426,10 +441,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return None
 
     def send_warning_message(self):
-            self.warning_displayed = True
-            QMetaObject.invokeMethod(self, "show_warning_message", Qt.QueuedConnection)
-            self.warning_displayed = False
-            
+        self.warning_displayed = True
+        QMetaObject.invokeMethod(self, "show_warning_message", Qt.QueuedConnection)
+        
+        
 # Settings Page Class
 class SettingsPage(QMainWindow, Ui_Settings):
     def __init__(self, parent=None):
@@ -509,7 +524,7 @@ class SettingsPage(QMainWindow, Ui_Settings):
         self.parent().settings = load_settings()
         self.update_sessions_list()
         current_wait_time = self.parent().get_wait_time()
-        index = self.ui.Delay.findText(current_wait_time)
+        index = self.ui.Delay.findText(str(current_wait_time))  # Ensure the argument is a string
         if index != -1:
             self.ui.Delay.setCurrentIndex(index)
         self.OverrideDelay.setChecked(self.parent().settings["override_delay"])
