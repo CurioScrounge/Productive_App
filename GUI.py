@@ -1,10 +1,3 @@
- 
-    
-    
-    
-    
-    
-    
 import sys
 import json
 from PyQt5.QtWidgets import QApplication, QMainWindow, QCheckBox, QListWidgetItem, QFileDialog, QMessageBox, QTextEdit
@@ -16,6 +9,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import threading
+from flask_server import start_flask_server, current_url
 
 # Import the generated UI files
 from ui_Splash import Ui_SplashScreen
@@ -32,7 +26,6 @@ def load_settings():
     try:
         with open(SETTINGS_FILE, 'r') as f:
             settings = json.load(f)
-            # Convert session times back to QTime objects
             for session in settings.get('sessions', []):
                 if isinstance(session["start_time"], str):
                     session["start_time"] = QTime.fromString(session["start_time"], "HH:mm")
@@ -52,7 +45,6 @@ def load_settings():
 
 # Save settings to file
 def save_settings(settings):
-    # Create a copy of the settings to convert QTime objects to strings
     settings_copy = {
         "wait_time": settings["wait_time"],
         "sessions": [
@@ -82,32 +74,26 @@ class SplashScreen(QMainWindow):
         self.ui = Ui_SplashScreen()
         self.ui.setupUi(self)
 
-        # Remove title bar and make the splash screen transparent
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
 
-        # Start the timer for the splash screen
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.progress)
         self.timer.start(25)  # Timer in milliseconds
 
-        # Show the splash screen
         self.show()
 
     def progress(self):
         global counter
 
-        # Set value to progress bar
         self.ui.progressBar.setValue(counter)
 
-        # Close splash screen and open the main window
         if counter > 100:
             self.timer.stop()
             self.main = MainWindow()
             self.main.show()
             self.close()
 
-        # Increase counter
         counter += 1
 
 # Main Window Class
@@ -115,11 +101,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+                # Initialize the machine learning model
+        self.vectorizer = CountVectorizer()
+        self.model = MultinomialNB()
 
-        # Set fixed size for the main window
         self.setFixedSize(ScreenWidth, ScreenHeight)
 
-        # Load settings
         self.settings = load_settings()
         self.wait_time = self.settings.get("wait_time", "5")
         self.sessions = self.settings.get("sessions", [])
@@ -129,11 +116,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.override_delay = self.settings.get("override_delay", False)
         self.warning_message = self.settings.get("warning_message", "Unproductive activity detected! For your own good, please return to being productive!")
 
-        # Track unproductive activity
         self.unproductive_flag = False
         self.unproductive_timer = QElapsedTimer()
 
-        # Connect signals to slots
         self.AddWhitelist.clicked.connect(self.add_to_whitelist)
         self.BrowseFile.clicked.connect(self.browse_file)
         self.RemoveWhitelist.clicked.connect(self.remove_selected_from_whitelist)
@@ -142,7 +127,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.RemoveBlacklist.clicked.connect(self.remove_selected_from_blacklist)
         self.Settings.clicked.connect(self.open_settings)
 
-        # Example categories and sites
         self.category_sites = {
             "Social Media": ["facebook.com", "twitter.com", "instagram.com", "github.com"],
             "Games": ["crazygames.com", "store.epicgames.com", "store.steampowered.com"],
@@ -153,33 +137,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             "Productivity Killers": ["nytimes.com/games/wordle", "nytimes.com/puzzles/spelling-bee", "nytimes.com/crosswords/game/mini"]
         }
 
-        # Populate unproductive categories with customized checkboxes
         self.populate_unproductive_categories()
-
-        # Populate whitelisted sites
         self.populate_whitelisted_sites()
-
-        # Populate blacklisted sites
         self.populate_blacklisted_sites()
 
-        # Timer to check the current time against sessions
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.check_sessions)
-        self.timer.start(60000)  # Check every minute
+        self.timer.start(30000)  # Check every minute
 
-        # Initialize the machine learning model
-        self.vectorizer = CountVectorizer()
-        self.model = MultinomialNB()
+
 
         # Train the model
         self.train_model()
 
-        
+                # Start the Flask server to receive current URL from the browser extension
+        start_flask_server()
 
     def populate_unproductive_categories(self):
         for category, examples in self.category_sites.items():
             checkbox = QCheckBox(category)
-            # Customize the checkbox font and style
             checkbox.setStyleSheet("""
                 QCheckBox {
                     font-family: 'Segoe UI';
@@ -193,7 +169,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.Categories.addWidget(checkbox)
             checkbox.stateChanged.connect(lambda state, name=category: self.update_category_state(name, state))
 
-            # Set the checkbox state based on the saved settings
             if category in self.categories:
                 checkbox.setChecked(self.categories[category])
 
@@ -289,16 +264,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for session in self.sessions:
             if session["days"][current_day]:
                 while session["start_time"] <= current_time <= session["end_time"]:
-                    # Timer to check website activity
                     self.activity_timer = QTimer()
                     self.activity_timer.timeout.connect(self.monitor_activity)
-                    self.activity_timer.start(30000)  # Check every 20 seconds
+                    self.activity_timer.start(20000)  # Check every 20 seconds
 
     def monitor_activity(self):
         threading.Thread(target=self.detect_unproductive_activity).start()
 
     def detect_unproductive_activity(self):
-        # Logic to detect unproductive activity
         current_website = self.get_current_website()
         if current_website in self.whitelisted_sites:
             self.unproductive_flag = False
@@ -322,7 +295,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.unproductive_flag = False
 
     def predict_unproductive(self, website):
-        # Predict if the website is unproductive using the trained model
         website_content = self.fetch_website_content(website)
         if not website_content:
             return False
@@ -330,7 +302,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         return prediction[0] == "unproductive"
 
     def fetch_website_content(self, url):
-        # Fetch the website content for classification
         try:
             response = requests.get("http://" + url)
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -340,7 +311,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return None
 
     def train_model(self):
-        # Train the machine learning model based on user-selected categories
         data = []
         labels = []
         for category, examples in self.category_sites.items():
@@ -359,13 +329,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.model.fit(self.vectorizer.transform(data), labels)
 
     def get_current_website(self):
-        # Placeholder for getting the current website the user is visiting
-        # This needs to be implemented using a browser extension or similar method
-        return "example.com"
+        global current_url
+        print(f"Current URL: {current_url}")  # Debug logging
+        return current_url
 
     def send_warning_message(self):
         QMessageBox.warning(self, "Warning", self.warning_message)
 
+# Settings Page Class
 class SettingsPage(QMainWindow, Ui_Settings):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -373,26 +344,21 @@ class SettingsPage(QMainWindow, Ui_Settings):
         self.ui.setupUi(self)
         self.sessions = self.parent().sessions
 
-        # Set fixed size for the settings
         self.setFixedSize(ScreenWidth, ScreenHeight)
 
-        # Connect buttons
         self.ui.AddTiming.clicked.connect(self.add_session)
         self.ui.RemoveTiming.clicked.connect(self.remove_session)
         self.ui.Save.clicked.connect(self.save_settings)
         self.ui.BackHome.clicked.connect(self.go_back)  # Connect the back button
 
-        # Use existing widgets from the designer
         self.OverrideDelay = self.ui.OverrideDelay
         self.WarningMessage = self.ui.Warning  # Ensure this matches the widget name in your UI file
 
-        # Set initial values for override delay and warning message
         self.OverrideDelay.setChecked(self.parent().override_delay)
         self.WarningMessage.setPlainText(self.parent().warning_message)
 
         self.OverrideDelay.stateChanged.connect(self.set_override_delay)
 
-        # Add predefined wait times to the combo box
         self.ui.Delay.addItems(["5", "10", "15", "30"])
         self.reload_settings_page()  # Load initial settings
 
@@ -430,7 +396,6 @@ class SettingsPage(QMainWindow, Ui_Settings):
             self.ui.ExistingRunTimes.takeItem(index)
 
     def save_settings(self):
-        # Save the settings, including the wait time
         wait_time = self.ui.Delay.currentText()
         self.parent().set_wait_time(wait_time)
         self.parent().sessions = self.sessions
@@ -447,28 +412,20 @@ class SettingsPage(QMainWindow, Ui_Settings):
         save_settings(self.parent().settings)
 
     def reload_settings_page(self):
-        # Reload settings from file to ensure the latest values are reflected
         self.parent().settings = load_settings()
-
-        # Clear and reload the settings page
         self.update_sessions_list()
-        # Set the delay period to the currently saved wait time
         current_wait_time = self.parent().get_wait_time()
         index = self.ui.Delay.findText(current_wait_time)
         if index != -1:
             self.ui.Delay.setCurrentIndex(index)
-        # Set the override delay checkbox
         self.OverrideDelay.setChecked(self.parent().settings["override_delay"])
-        # Set the warning message text
         self.WarningMessage.setPlainText(self.parent().settings["warning_message"])
 
     def showEvent(self, event):
         super().showEvent(event)
-        # Reload the settings when the settings page is shown
         self.reload_settings_page()
 
     def go_back(self):
-        # Update parent settings before going back
         self.parent().override_delay = self.OverrideDelay.isChecked()
         self.parent().warning_message = self.WarningMessage.toPlainText()
 

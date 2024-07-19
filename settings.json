@@ -26,6 +26,19 @@
                 true,
                 true
             ]
+        },
+        {
+            "start_time": "11:00",
+            "end_time": "17:00",
+            "days": [
+                false,
+                false,
+                false,
+                false,
+                true,
+                false,
+                false
+            ]
         }
     ],
     "categories": {
