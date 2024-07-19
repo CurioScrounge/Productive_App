@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 import threading
+from waitress import serve
 
 app = Flask(__name__)
 current_url = ""
@@ -13,7 +14,7 @@ def update_current_url():
     return jsonify({"status": "success"})
 
 def run_flask():
-    app.run(port=5000, debug=False)
+    serve(app, host='0.0.0.0', port=5000)
 
 def start_flask_server():
     threading.Thread(target=run_flask).start()

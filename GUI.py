@@ -101,7 +101,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-                # Initialize the machine learning model
+
+        # Initialize the machine learning model
         self.vectorizer = CountVectorizer()
         self.model = MultinomialNB()
 
@@ -143,15 +144,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.check_sessions)
-        self.timer.start(30000)  # Check every minute
-
-
+        self.timer.start(30000)  # Check every 30 seconds
 
         # Train the model
         self.train_model()
 
-                # Start the Flask server to receive current URL from the browser extension
+        # Start the Flask server to receive current URL from the browser extension
         start_flask_server()
+
+        # Monitor activity every 20 seconds
+        self.activity_timer = QTimer()
+        self.activity_timer.timeout.connect(self.monitor_activity)
+        self.activity_timer.start(20000)
 
     def populate_unproductive_categories(self):
         for category, examples in self.category_sites.items():
@@ -263,36 +267,37 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         for session in self.sessions:
             if session["days"][current_day]:
-                while session["start_time"] <= current_time <= session["end_time"]:
-                    self.activity_timer = QTimer()
-                    self.activity_timer.timeout.connect(self.monitor_activity)
-                    self.activity_timer.start(20000)  # Check every 20 seconds
+                if session["start_time"] <= current_time <= session["end_time"]:
+                    self.monitor_activity()
 
     def monitor_activity(self):
         threading.Thread(target=self.detect_unproductive_activity).start()
 
     def detect_unproductive_activity(self):
         current_website = self.get_current_website()
-        if current_website in self.whitelisted_sites:
-            self.unproductive_flag = False
-            return
-        if current_website in self.blacklisted_sites:
-            self.unproductive_flag = True
-        else:
-            self.unproductive_flag = self.predict_unproductive(current_website)
-
-        if self.unproductive_flag:
-            if self.override_delay:
-                self.send_warning_message()
+        if current_website:
+            if current_website in self.whitelisted_sites:
+                self.unproductive_flag = False
+                return
+            if current_website in self.blacklisted_sites:
+                self.unproductive_flag = True
             else:
-                if not self.unproductive_flag:
-                    self.unproductive_flag = True
-                    self.unproductive_timer.start()
-                elif self.unproductive_timer.elapsed() >= int(self.wait_time) * 60000:
+                self.unproductive_flag = self.predict_unproductive(current_website)
+
+            if self.unproductive_flag:
+                if self.override_delay:
                     self.send_warning_message()
-                    self.unproductive_flag = False
+                else:
+                    if not self.unproductive_flag:
+                        self.unproductive_flag = True
+                        self.unproductive_timer.start()
+                    elif self.unproductive_timer.elapsed() >= int(self.wait_time) * 60000:
+                        self.send_warning_message()
+                        self.unproductive_flag = False
+            else:
+                self.unproductive_flag = False
         else:
-            self.unproductive_flag = False
+            print("No current website detected.")
 
     def predict_unproductive(self, website):
         website_content = self.fetch_website_content(website)
@@ -302,8 +307,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         return prediction[0] == "unproductive"
 
     def fetch_website_content(self, url):
+        if not url.startswith("http://") and not url.startswith("https://"):
+            url = "http://" + url
         try:
-            response = requests.get("http://" + url)
+            response = requests.get(url)
             soup = BeautifulSoup(response.text, 'html.parser')
             return ' '.join(re.findall(r'\w+', soup.get_text().lower()))
         except Exception as e:
@@ -316,12 +323,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for category, examples in self.category_sites.items():
             if self.categories.get(category):
                 for site in examples:
-                    content = self.fetch_website_content(site)
+                    content = self.fetch_website_content("http://" + site)
                     if content:
                         data.append(content)
                         labels.append("unproductive")
         for site in self.whitelisted_sites:
-            content = self.fetch_website_content(site)
+            content = self.fetch_website_content("http://" + site)
             if content:
                 data.append(content)
                 labels.append("productive")
