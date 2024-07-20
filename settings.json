@@ -39,6 +39,19 @@
                 false,
                 false
             ]
+        },
+        {
+            "start_time": "12:00",
+            "end_time": "00:00",
+            "days": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                true,
+                true
+            ]
         }
     ],
     "categories": {
@@ -58,6 +71,6 @@
         "mail.google.com",
         "scholar.google.com"
     ],
-    "override_delay": false,
+    "override_delay": true,
     "warning_message": "You are straying towards the dark side... For your own good, please return to being productive!"
 }

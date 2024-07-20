@@ -12,6 +12,8 @@ import threading
 import pyperclip  # Clipboard handling
 import subprocess
 import time
+from urllib.parse import urlparse  # Correct import of urlparse
+import hashlib
 
 # Import the generated UI files
 from ui_Splash import Ui_SplashScreen
@@ -74,17 +76,27 @@ def save_settings(settings):
 class Worker(QObject):
     url_captured = pyqtSignal(str)
 
+    def __init__(self):
+        super().__init__()
+        self.last_clipboard_hash = None
+
     def run(self):
-        previous_url = ""
         while True:
             current_url = pyperclip.paste()  # Read from clipboard
-            print(f"Clipboard content: {current_url}")  # Debug logging
-            if current_url and (current_url.startswith("http://") or current_url.startswith("https://")) and current_url != previous_url:
-                previous_url = current_url
+            current_hash = hashlib.md5(current_url.encode()).hexdigest()
+            if self.is_valid_url(current_url) and current_hash != self.last_clipboard_hash:
+                self.last_clipboard_hash = current_hash
                 self.url_captured.emit(current_url)
             else:
-                print(f"Clipboard URL unchanged: {current_url}")
-            time.sleep(2)  # Check every 2 seconds
+                print(f"Clipboard does not contain a valid URL or URL unchanged: {current_url}")
+            time.sleep(10)  # Check every 2 seconds
+
+    def is_valid_url(self, url):
+        try:
+            result =  urlparse(url)
+            return all([result.scheme, result.netloc])
+        except ValueError:
+            return False
 
 # Splash Screen Class
 class SplashScreen(QMainWindow):
@@ -101,14 +113,14 @@ class SplashScreen(QMainWindow):
 
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.progress)
-        self.timer.start(25)  # Timer in milliseconds
+        self.timer.start(100)  # Timer in milliseconds
 
         self.show()
 
     def progress(self):
         self.ui.progressBar.setValue(self.counter)
 
-        if self.counter > 200:
+        if self.counter > 100:
             self.timer.stop()
             self.main = MainWindow()
             self.main.show()
@@ -167,15 +179,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.check_sessions)
-        self.timer.start(30000)  # Check every 30 seconds
+        self.timer.start(100000)  # Check every 10 seconds
 
         # Train the model
         self.train_model()
-
-        # Monitor activity every 20 seconds
-        self.activity_timer = QTimer()
-        self.activity_timer.timeout.connect(self.monitor_activity)
-        self.activity_timer.start(20000)
 
         # Setup worker thread
         self.worker = Worker()
@@ -188,62 +195,85 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def handle_captured_url(self, url):
         print(f"Handling captured URL: {url}")
+        if not self.check_sessions():
+            print("Current time is not within any session. Ignoring URL.")
+            return
+
         current_website = url
         if current_website:
             if current_website in self.whitelisted_sites:
+                print(f"Website {current_website} is whitelisted.")
                 self.unproductive_flag = False
                 return
             if current_website in self.blacklisted_sites:
+                print(f"Website {current_website} is blacklisted.")
                 self.unproductive_flag = True
             else:
                 self.unproductive_flag = self.predict_unproductive(current_website)
+                print(f"Website {current_website} is {'unproductive' if self.unproductive_flag else 'productive'}.")
 
             if self.unproductive_flag:
                 if self.override_delay:
+                    print("Override delay is enabled, displaying warning message immediately.")
                     self.display_warning_message()
                 else:
                     if not self.unproductive_timer.isValid():
+                        print("Starting unproductive timer.")
                         self.unproductive_timer.start()
                     elif self.unproductive_timer.elapsed() >= self.wait_time * 60000:
+                        print(f"Unproductive timer elapsed {self.wait_time} minutes, displaying warning message.")
                         self.display_warning_message()
                         self.unproductive_timer.invalidate()
+                    else:
+                        remaining_time = self.wait_time * 60000 - self.unproductive_timer.elapsed()
+                        print(f"Unproductive timer running. Time remaining: {remaining_time // 60000} minutes and {remaining_time % 60000 // 1000} seconds.")
             else:
+                print("Resetting unproductive flag and timer.")
                 self.unproductive_flag = False
                 self.unproductive_timer.invalidate()
         else:
             print("No current website detected.")
 
     def detect_unproductive_activity(self):
+        if not self.check_sessions():
+            print("Current time is not within any session. Ignoring activity detection.")
+            return
+
         current_website = self.get_current_website()
         if current_website:
             if current_website in self.whitelisted_sites:
+                print(f"Website {current_website} is whitelisted.")
                 self.unproductive_flag = False
                 self.unproductive_timer.invalidate()
                 return
             if current_website in self.blacklisted_sites:
+                print(f"Website {current_website} is blacklisted.")
                 self.unproductive_flag = True
             else:
                 self.unproductive_flag = self.predict_unproductive(current_website)
+                print(f"Website {current_website} is {'unproductive' if self.unproductive_flag else 'productive'}.")
 
             if self.unproductive_flag:
                 if self.override_delay:
+                    print("Override delay is enabled, displaying warning message immediately.")
                     self.display_warning_message()
                 else:
                     if not self.unproductive_timer.isValid():
+                        print("Starting unproductive timer.")
                         self.unproductive_timer.start()
                     elif self.unproductive_timer.elapsed() >= self.wait_time * 60000:
+                        print(f"Unproductive timer elapsed {self.wait_time} minutes, displaying warning message.")
                         self.display_warning_message()
                         self.unproductive_timer.invalidate()
+                    else:
+                        remaining_time = self.wait_time * 60000 - self.unproductive_timer.elapsed()
+                        print(f"Unproductive timer running. Time remaining: {remaining_time // 60000} minutes and {remaining_time % 60000 // 1000} seconds.")
             else:
+                print("Resetting unproductive flag and timer.")
                 self.unproductive_flag = False
                 self.unproductive_timer.invalidate()
         else:
             print("No current website detected.")
-
-    def display_warning_message(self):
-        if not self.warning_displayed:
-            self.warning_displayed = True
-            QMetaObject.invokeMethod(self, "show_warning_message", Qt.QueuedConnection)
 
     @QtCore.pyqtSlot()
     def show_warning_message(self):
@@ -378,12 +408,30 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         current_time = QTime.currentTime()
         current_day = QtCore.QDate.currentDate().dayOfWeek() - 1  # 0=Monday, 1=Tuesday, ..., 6=Sunday
 
+        in_session = False
         for session in self.sessions:
-            if session["days"][current_day]:
-                if session["start_time"] <= current_time <= session["end_time"]:
-                    self.monitor_activity()
-                    return  # Exit after finding the first active session
+            start_time = session["start_time"]
+            end_time = session["end_time"]
 
+            if session["days"][current_day]:
+                if end_time < start_time:  # End time is past midnight
+                    if current_time >= start_time or current_time <= end_time:
+                        in_session = True
+                        
+                        print(f"Current time {current_time.toString()} is within session: {start_time.toString()} - {end_time.toString()} (spans midnight)")
+                        break
+                else:
+                    if start_time <= current_time <= end_time:
+                        in_session = True
+                        
+                        print(f"Current time {current_time.toString()} is within session: {start_time.toString()} - {end_time.toString()}")
+                        break
+        if in_session:
+            self.monitor_activity()
+        if not in_session:
+            print(f"Current time {current_time.toString()} is not within any session.")
+        return in_session
+    
     def monitor_activity(self):
         threading.Thread(target=self.detect_unproductive_activity).start()
 
@@ -408,7 +456,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def train_model(self):
         data = []
         labels = []
-        # Add unproductive sites from category_sites
+        # Add sites from category_sites
         for category, examples in self.category_sites.items():
             if self.categories.get(category):
                 for site in examples:
@@ -416,12 +464,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     if content:
                         data.append(content)
                         labels.append("unproductive")
+            else:
+                for site in examples:
+                    content = self.fetch_website_content("http://" + site)
+                    if content:
+                        data.append(content)
+                        labels.append("productive")
         # Add whitelisted sites as productive
         for site in self.whitelisted_sites:
             content = self.fetch_website_content("http://" + site)
             if content:
                 data.append(content)
                 labels.append("productive")
+                
+        # Treat blacklisted sites as unproductive
+        for site in self.blacklisted_sites:
+            content = self.fetch_website_content("http://" + site)
+            if content:
+                data.append(content)
+                labels.append("unproductive")
         # Add manually specified productive sites
         for site in self.productive_sites:
             content = self.fetch_website_content("http://" + site)
@@ -514,19 +575,23 @@ class SettingsPage(QMainWindow, Ui_Settings):
         save_settings(self.parent().settings)
         print("Settings saved")
         self.reload_settings_page()
-
+        
+        
     def set_override_delay(self, state):
         self.parent().override_delay = bool(state)
         self.parent().settings["override_delay"] = self.parent().override_delay
         save_settings(self.parent().settings)
 
     def reload_settings_page(self):
-        self.parent().settings = load_settings()
+        self.parent().settings = load_settings()  # Reload settings from file
+        self.sessions = self.parent().settings.get("sessions", [])
         self.update_sessions_list()
+
         current_wait_time = self.parent().get_wait_time()
         index = self.ui.Delay.findText(str(current_wait_time))  # Ensure the argument is a string
         if index != -1:
             self.ui.Delay.setCurrentIndex(index)
+
         self.OverrideDelay.setChecked(self.parent().settings["override_delay"])
         self.WarningMessage.setPlainText(self.parent().settings["warning_message"])
 
