@@ -16,7 +16,7 @@
         }
     ],
     "categories": {
-        "Social Media": true,
+        "Social Media": false,
         "Games": false,
         "Video Entertainment": false,
         "Visual Entertainment": false,
