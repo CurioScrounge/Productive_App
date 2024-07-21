@@ -1,19 +1,29 @@
 import sys
 import json
 from PyQt5.QtWidgets import QApplication, QMainWindow, QCheckBox, QListWidgetItem, QFileDialog, QDialog, QLabel, QVBoxLayout, QPushButton, QMessageBox
-from PyQt5.QtCore import Qt, QTime, QTimer, QElapsedTimer, pyqtSignal, QObject, QThread, QMetaObject, Q_ARG
+from PyQt5.QtCore import Qt, QTime, QTimer, QElapsedTimer, pyqtSlot, QMetaObject
 from PyQt5 import QtCore
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
+from PIL import ImageGrab, Image
+import pytesseract
+import threading
 import requests
 from bs4 import BeautifulSoup
 import re
-import threading
-import pyperclip  # Clipboard handling
-import subprocess
-import time
-from urllib.parse import urlparse  # Correct import of urlparse
-import hashlib
+
+from PyQt5.QtCore import QThread, pyqtSignal
+
+class ModelTrainer(QThread):
+    training_finished = pyqtSignal()
+
+    def __init__(self, main_window):
+        super().__init__()
+        self.main_window = main_window
+
+    def run(self):
+        self.main_window.train_model()
+        self.training_finished.emit()
 
 # Import the generated UI files
 from ui_Splash import Ui_SplashScreen
@@ -24,9 +34,6 @@ from ui_Settings import Ui_Settings
 SETTINGS_FILE = 'settings.json'
 SCREEN_WIDTH = 1100
 SCREEN_HEIGHT = 750
-
-# Start the URL capture script
-subprocess.Popen(["python", "capture_url.py"])
 
 # Load settings from file
 def load_settings():
@@ -73,31 +80,6 @@ def save_settings(settings):
     with open(SETTINGS_FILE, 'w') as f:
         json.dump(settings_copy, f, indent=4)
 
-class Worker(QObject):
-    url_captured = pyqtSignal(str)
-
-    def __init__(self):
-        super().__init__()
-        self.last_clipboard_hash = None
-
-    def run(self):
-        while True:
-            current_url = pyperclip.paste()  # Read from clipboard
-            current_hash = hashlib.md5(current_url.encode()).hexdigest()
-            if self.is_valid_url(current_url) and current_hash != self.last_clipboard_hash:
-                self.last_clipboard_hash = current_hash
-                self.url_captured.emit(current_url)
-            else:
-                print(f"Clipboard does not contain a valid URL or URL unchanged: {current_url}")
-            time.sleep(10)  # Check every 2 seconds
-
-    def is_valid_url(self, url):
-        try:
-            result =  urlparse(url)
-            return all([result.scheme, result.netloc])
-        except ValueError:
-            return False
-
 # Splash Screen Class
 class SplashScreen(QMainWindow):
     def __init__(self):
@@ -113,27 +95,47 @@ class SplashScreen(QMainWindow):
 
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.progress)
-        self.timer.start(100)  # Timer in milliseconds
+        self.timer.start(50)  # Timer in milliseconds
 
         self.show()
+
+        # Create the main window instance
+        self.main_window = MainWindow()
+
+        # Start training the model
+        self.model_trainer = ModelTrainer(self.main_window)
+        self.model_trainer.training_finished.connect(self.on_training_finished)
+        self.model_trainer.start()
 
     def progress(self):
         self.ui.progressBar.setValue(self.counter)
 
         if self.counter > 100:
             self.timer.stop()
-            self.main = MainWindow()
-            self.main.show()
+            self.main_window.show()
             self.close()
 
         self.counter += 1
 
+    def on_training_finished(self):
+        print("Model training completed.")
+        self.main_window.on_training_finished()
 
-# Main Window Class
+import pytesseract
+import os
+
+# Determine the path to the Tesseract executable
+tesseract_path = os.path.join(os.path.dirname(__file__), 'Tesseract-OCR', 'tesseract.exe')
+pytesseract.pytesseract.tesseract_cmd = tesseract_path
+
+
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+
+        self.currently_in_session = False
+        self.model_trained = False
 
         # Initialize the machine learning model
         self.vectorizer = CountVectorizer()
@@ -147,13 +149,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.categories = self.settings.get("categories", {})
         self.whitelisted_sites = self.settings.get("whitelisted_sites", [])
         self.blacklisted_sites = self.settings.get("blacklisted_sites", [])
-        self.productive_sites = self.settings.get("productive_sites", [])  # Load productive_sites
+        self.productive_sites = self.settings.get("productive_sites", [])
         self.override_delay = self.settings.get("override_delay", False)
         self.warning_message = self.settings.get("warning_message", "Unproductive activity detected! For your own good, please return to being productive!")
 
         self.unproductive_flag = False
         self.unproductive_timer = QElapsedTimer()
-        self.warning_displayed = False  # Flag to indicate if a warning is displayed
+        self.warning_displayed = False
 
         self.AddWhitelist.clicked.connect(self.add_to_whitelist)
         self.BrowseFile.clicked.connect(self.browse_file)
@@ -177,81 +179,50 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.populate_whitelisted_sites()
         self.populate_blacklisted_sites()
 
-        self.timer = QtCore.QTimer()
-        self.timer.timeout.connect(self.check_sessions)
-        self.timer.start(100000)  # Check every 10 seconds
+        self.session_check_timer = QTimer()
+        self.session_check_timer.timeout.connect(self.check_sessions)
+        self.session_check_timer.start(10000)  # Check every 10 seconds
 
-        # Train the model
-        self.train_model()
+        self.activity_monitor_timer = QTimer()
+        self.activity_monitor_timer.timeout.connect(self.detect_unproductive_activity)
+        self.activity_monitor_timer.start(15000)  # Check every 15 seconds
 
-        # Setup worker thread
-        self.worker = Worker()
-        self.worker_thread = QThread()
-        self.worker.moveToThread(self.worker_thread)
-        
-        self.worker.url_captured.connect(self.handle_captured_url)
-        self.worker_thread.started.connect(self.worker.run)
-        self.worker_thread.start()
+    def on_training_finished(self):
+        self.model_trained = True
+        print("Model training completed.")
 
-    def handle_captured_url(self, url):
-        print(f"Handling captured URL: {url}")
-        if not self.check_sessions():
-            print("Current time is not within any session. Ignoring URL.")
-            return
+    def capture_screen(self):
+        screen = ImageGrab.grab()
+        return screen
 
-        current_website = url
-        if current_website:
-            if current_website in self.whitelisted_sites:
-                print(f"Website {current_website} is whitelisted.")
-                self.unproductive_flag = False
-                return
-            if current_website in self.blacklisted_sites:
-                print(f"Website {current_website} is blacklisted.")
-                self.unproductive_flag = True
-            else:
-                self.unproductive_flag = self.predict_unproductive(current_website)
-                print(f"Website {current_website} is {'unproductive' if self.unproductive_flag else 'productive'}.")
-
-            if self.unproductive_flag:
-                if self.override_delay:
-                    print("Override delay is enabled, displaying warning message immediately.")
-                    self.display_warning_message()
-                else:
-                    if not self.unproductive_timer.isValid():
-                        print("Starting unproductive timer.")
-                        self.unproductive_timer.start()
-                    elif self.unproductive_timer.elapsed() >= self.wait_time * 60000:
-                        print(f"Unproductive timer elapsed {self.wait_time} minutes, displaying warning message.")
-                        self.display_warning_message()
-                        self.unproductive_timer.invalidate()
-                    else:
-                        remaining_time = self.wait_time * 60000 - self.unproductive_timer.elapsed()
-                        print(f"Unproductive timer running. Time remaining: {remaining_time // 60000} minutes and {remaining_time % 60000 // 1000} seconds.")
-            else:
-                print("Resetting unproductive flag and timer.")
-                self.unproductive_flag = False
-                self.unproductive_timer.invalidate()
-        else:
-            print("No current website detected.")
+    def extract_text_from_image(self, image):
+        try:
+            text = pytesseract.image_to_string(image)
+            return text
+        except pytesseract.TesseractNotFoundError:
+            print("Tesseract is not installed or not found in PATH.")
+            return ""
+        except Exception as e:
+            print(f"Error during OCR processing: {e}")
+            return ""
 
     def detect_unproductive_activity(self):
-        if not self.check_sessions():
+        if not self.currently_in_session:
             print("Current time is not within any session. Ignoring activity detection.")
             return
 
-        current_website = self.get_current_website()
-        if current_website:
-            if current_website in self.whitelisted_sites:
-                print(f"Website {current_website} is whitelisted.")
-                self.unproductive_flag = False
-                self.unproductive_timer.invalidate()
-                return
-            if current_website in self.blacklisted_sites:
-                print(f"Website {current_website} is blacklisted.")
-                self.unproductive_flag = True
-            else:
-                self.unproductive_flag = self.predict_unproductive(current_website)
-                print(f"Website {current_website} is {'unproductive' if self.unproductive_flag else 'productive'}.")
+        if not self.model_trained:
+            print("Model is not yet trained. Ignoring activity detection.")
+            return
+
+        print("Detecting unproductive activity...")
+        screen_image = self.capture_screen()
+        screen_text = self.extract_text_from_image(screen_image)
+
+        if screen_text.strip():
+            print("Captured text from screen:", screen_text)
+            self.unproductive_flag = self.predict_unproductive(screen_text)
+            print(f"Screen text is {'unproductive' if self.unproductive_flag else 'productive'}.")
 
             if self.unproductive_flag:
                 if self.override_delay:
@@ -273,7 +244,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.unproductive_flag = False
                 self.unproductive_timer.invalidate()
         else:
-            print("No current website detected.")
+            print("No text detected on screen.")
 
     @QtCore.pyqtSlot()
     def show_warning_message(self):
@@ -299,6 +270,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @QtCore.pyqtSlot()
     def on_warning_closed(self):
         self.warning_displayed = False
+        self.unproductive_flag = False
+        self.unproductive_timer.invalidate()
+        print("Warning message closed. Resetting state.")
 
     def populate_unproductive_categories(self):
         for category, examples in self.category_sites.items():
@@ -323,7 +297,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.categories[category_name] = bool(state)
         self.settings["categories"] = self.categories
         save_settings(self.settings)
-        self.train_model()  # Retrain the model when categories change
+        if self.model_trained:
+            self.train_model()  # Retrain the model when categories change
 
     def populate_whitelisted_sites(self):
         for site in self.whitelisted_sites:
@@ -417,45 +392,36 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 if end_time < start_time:  # End time is past midnight
                     if current_time >= start_time or current_time <= end_time:
                         in_session = True
-                        
                         print(f"Current time {current_time.toString()} is within session: {start_time.toString()} - {end_time.toString()} (spans midnight)")
                         break
                 else:
                     if start_time <= current_time <= end_time:
                         in_session = True
-                        
                         print(f"Current time {current_time.toString()} is within session: {start_time.toString()} - {end_time.toString()}")
                         break
-        if in_session:
-            self.monitor_activity()
-        if not in_session:
+
+        if in_session and not self.currently_in_session:
+            print(f"Current time {current_time.toString()} is within a session.")
+            self.currently_in_session = True
+        elif not in_session and self.currently_in_session:
             print(f"Current time {current_time.toString()} is not within any session.")
-        return in_session
-    
+            self.currently_in_session = False
+
     def monitor_activity(self):
-        threading.Thread(target=self.detect_unproductive_activity).start()
+        self.activity_monitor_timer.start()
 
-    def predict_unproductive(self, website):
-        website_content = self.fetch_website_content(website)
-        if not website_content:
+    def predict_unproductive(self, text):
+        if not self.currently_in_session or not self.model_trained:
             return False
-        prediction = self.model.predict(self.vectorizer.transform([website_content]))
-        return prediction[0] == "unproductive"
 
-    def fetch_website_content(self, url):
-        if not url.startswith("http://") and not url.startswith("https://"):
-            url = "http://" + url
-        try:
-            response = requests.get(url)
-            soup = BeautifulSoup(response.text, 'html.parser')
-            return ' '.join(re.findall(r'\w+', soup.get_text().lower()))
-        except Exception as e:
-            print(f"Error fetching website content: {e}")
-            return None
+        content_features = self.vectorizer.transform([text])
+        prediction = self.model.predict(content_features)
+        return prediction[0] == "unproductive"
 
     def train_model(self):
         data = []
         labels = []
+
         # Add sites from category_sites
         for category, examples in self.category_sites.items():
             if self.categories.get(category):
@@ -470,6 +436,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     if content:
                         data.append(content)
                         labels.append("productive")
+
         # Add whitelisted sites as productive
         for site in self.whitelisted_sites:
             content = self.fetch_website_content("http://" + site)
@@ -483,28 +450,35 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if content:
                 data.append(content)
                 labels.append("unproductive")
+
         # Add manually specified productive sites
         for site in self.productive_sites:
             content = self.fetch_website_content("http://" + site)
             if content:
                 data.append(content)
                 labels.append("productive")
+
         self.vectorizer.fit(data)
         self.model.fit(self.vectorizer.transform(data), labels)
 
-    def get_current_website(self):
-        current_url = pyperclip.paste()  # Read from clipboard
-        print(f"Clipboard content: {current_url}")  # Debug logging
-        if current_url and (current_url.startswith("http://") or current_url.startswith("https://")):
-            return current_url
-        else:
-            print("Clipboard does not contain a valid URL")
+    def fetch_website_content(self, url):
+        if not url.startswith("http://") and not url.startswith("https://"):
+            url = "http://" + url
+        try:
+            response = requests.get(url)
+            soup = BeautifulSoup(response.text, 'html.parser')
+            return ' '.join(re.findall(r'\w+', soup.get_text().lower()))
+        except Exception as e:
+            print(f"Error fetching website content: {e}")
             return None
 
-    def send_warning_message(self):
+    def display_warning_message(self):
         self.warning_displayed = True
         QMetaObject.invokeMethod(self, "show_warning_message", Qt.QueuedConnection)
-        
+
+    def send_warning_message(self):
+        if not self.warning_displayed:
+            self.display_warning_message()
         
 # Settings Page Class
 class SettingsPage(QMainWindow, Ui_Settings):

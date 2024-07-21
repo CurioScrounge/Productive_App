@@ -2,19 +2,6 @@
     "wait_time": "5",
     "sessions": [
         {
-            "start_time": "03:00",
-            "end_time": "00:00",
-            "days": [
-                true,
-                true,
-                true,
-                false,
-                false,
-                false,
-                false
-            ]
-        },
-        {
             "start_time": "12:00",
             "end_time": "17:00",
             "days": [
@@ -23,32 +10,6 @@
                 true,
                 true,
                 true,
-                true,
-                true
-            ]
-        },
-        {
-            "start_time": "11:00",
-            "end_time": "17:00",
-            "days": [
-                false,
-                false,
-                false,
-                false,
-                true,
-                false,
-                false
-            ]
-        },
-        {
-            "start_time": "12:00",
-            "end_time": "00:00",
-            "days": [
-                false,
-                false,
-                false,
-                false,
-                false,
                 true,
                 true
             ]
@@ -56,7 +17,7 @@
     ],
     "categories": {
         "Social Media": true,
-        "Games": true,
+        "Games": false,
         "Video Entertainment": false,
         "Visual Entertainment": false,
         "Forums": false,
@@ -69,8 +30,12 @@
         "docs.google.com",
         "slides.google.com",
         "mail.google.com",
-        "scholar.google.com"
+        "scholar.google.com",
+        "khanacademy.org",
+        "coursera.org",
+        "edx.org",
+        "canva.com"
     ],
-    "override_delay": true,
+    "override_delay": false,
     "warning_message": "You are straying towards the dark side... For your own good, please return to being productive!"
 }
