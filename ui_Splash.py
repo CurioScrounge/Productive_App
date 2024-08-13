@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'SplashuknrEm.ui'
+## Form generated from reading UI file 'SplashSdXavP.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -9,7 +9,6 @@
 ################################################################################
 
 from PyQt5.QtWidgets import *
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import (QCoreApplication, QPropertyAnimation, QDate, QDateTime, QMetaObject, QObject, QPoint, QRect, QSize, QTime, QUrl, Qt, QEvent)
 from PyQt5.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont, QFontDatabase, QIcon, QKeySequence, QLinearGradient, QPalette, QPainter, QPixmap, QRadialGradient)
@@ -19,7 +18,7 @@ class Ui_SplashScreen(object):
     def setupUi(self, SplashScreen):
         if not SplashScreen.objectName():
             SplashScreen.setObjectName(u"SplashScreen")
-        SplashScreen.resize(974, 677)
+        SplashScreen.resize(931, 574)
         self.centralwidget = QWidget(SplashScreen)
         self.centralwidget.setObjectName(u"centralwidget")
         self.verticalLayout = QVBoxLayout(self.centralwidget)
@@ -38,7 +37,7 @@ class Ui_SplashScreen(object):
         self.frame.setFrameShadow(QFrame.Raised)
         self.label_title = QLabel(self.frame)
         self.label_title.setObjectName(u"label_title")
-        self.label_title.setGeometry(QRect(0, 190, 951, 91))
+        self.label_title.setGeometry(QRect(0, 160, 911, 91))
         font1 = QFont()
         font1.setFamily(u"Segoe UI")
         font1.setPointSize(36)
@@ -53,7 +52,7 @@ class Ui_SplashScreen(object):
         self.label_title.setAlignment(Qt.AlignCenter)
         self.progressBar = QProgressBar(self.frame)
         self.progressBar.setObjectName(u"progressBar")
-        self.progressBar.setGeometry(QRect(110, 520, 731, 23))
+        self.progressBar.setGeometry(QRect(90, 460, 731, 23))
         self.progressBar.setStyleSheet(u"QProgressBar{\n"
 "text-align:center;\n"
 "	background-color: rgb(238, 238, 238);\n"
@@ -69,7 +68,7 @@ class Ui_SplashScreen(object):
         self.progressBar.setValue(24)
         self.label_phrase = QLabel(self.frame)
         self.label_phrase.setObjectName(u"label_phrase")
-        self.label_phrase.setGeometry(QRect(10, 270, 951, 51))
+        self.label_phrase.setGeometry(QRect(10, 240, 891, 51))
         font2 = QFont()
         font2.setFamily(u"Segoe UI")
         font2.setPointSize(14)
@@ -83,7 +82,7 @@ class Ui_SplashScreen(object):
         self.label_phrase.setAlignment(Qt.AlignCenter)
         self.label_status = QLabel(self.frame)
         self.label_status.setObjectName(u"label_status")
-        self.label_status.setGeometry(QRect(0, 550, 951, 51))
+        self.label_status.setGeometry(QRect(10, 490, 901, 51))
         font3 = QFont()
         font3.setFamily(u"Segoe UI")
         font3.setPointSize(12)
@@ -97,7 +96,7 @@ class Ui_SplashScreen(object):
         self.label_status.setAlignment(Qt.AlignCenter)
         self.label_credits = QLabel(self.frame)
         self.label_credits.setObjectName(u"label_credits")
-        self.label_credits.setGeometry(QRect(0, 610, 951, 51))
+        self.label_credits.setGeometry(QRect(640, 500, 261, 51))
         font4 = QFont()
         font4.setFamily(u"Segoe UI")
         font4.setPointSize(10)
@@ -129,6 +128,6 @@ class Ui_SplashScreen(object):
         self.label_title.setText(QCoreApplication.translate("SplashScreen", u"<html><head/><body><p><span style=\" font-weight:600; color:#dc5f00;\">UNLEASH</span><span style=\" color:#dc5f00;\"> YOUR PRODUCTIVE POTENTIAL</span></p></body></html>", None))
         self.label_phrase.setText(QCoreApplication.translate("SplashScreen", u"<html><head/><body><p><span style=\" color:#eeeeee;\">Greatly customisable to your benefit, maximise your productivity today!</span></p></body></html>", None))
         self.label_status.setText(QCoreApplication.translate("SplashScreen", u"loading...", None))
-        self.label_credits.setText(QCoreApplication.translate("SplashScreen", u"<strong>Created:</strong> Summer Guo", None))
+        self.label_credits.setText(QCoreApplication.translate("SplashScreen", u"<strong>Created by:</strong> Summer Guo", None))
     # retranslateUi
 

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1100</width>
-    <height>750</height>
+    <width>1045</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -39,10 +39,10 @@
    <widget class="QListWidget" name="ExistingRunTimes">
     <property name="geometry">
      <rect>
-      <x>350</x>
-      <y>120</y>
+      <x>340</x>
+      <y>100</y>
       <width>341</width>
-      <height>601</height>
+      <height>491</height>
      </rect>
     </property>
     <property name="font">
@@ -62,10 +62,10 @@
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>10</y>
+      <x>40</x>
+      <y>0</y>
       <width>321</width>
-      <height>641</height>
+      <height>571</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -85,7 +85,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>20</y>
+       <y>0</y>
        <width>301</width>
        <height>41</height>
       </rect>
@@ -114,9 +114,9 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>110</y>
+       <y>70</y>
        <width>291</width>
-       <height>127</height>
+       <height>91</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
@@ -244,7 +244,7 @@
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>240</y>
+       <y>170</y>
        <width>181</width>
        <height>31</height>
       </rect>
@@ -270,7 +270,7 @@
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>310</y>
+       <y>220</y>
        <width>121</width>
        <height>21</height>
       </rect>
@@ -295,7 +295,7 @@
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>350</y>
+       <y>260</y>
        <width>121</width>
        <height>21</height>
       </rect>
@@ -320,7 +320,7 @@
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>390</y>
+       <y>300</y>
        <width>121</width>
        <height>21</height>
       </rect>
@@ -345,7 +345,7 @@
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>430</y>
+       <y>340</y>
        <width>121</width>
        <height>21</height>
       </rect>
@@ -370,7 +370,7 @@
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>470</y>
+       <y>380</y>
        <width>121</width>
        <height>21</height>
       </rect>
@@ -395,7 +395,7 @@
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>510</y>
+       <y>420</y>
        <width>121</width>
        <height>21</height>
       </rect>
@@ -420,7 +420,7 @@
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>550</y>
+       <y>460</y>
        <width>121</width>
        <height>21</height>
       </rect>
@@ -445,7 +445,7 @@
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>610</y>
+       <y>510</y>
        <width>101</width>
        <height>31</height>
       </rect>
@@ -473,8 +473,8 @@
    <widget class="QPushButton" name="RemoveTiming">
     <property name="geometry">
      <rect>
-      <x>610</x>
-      <y>80</y>
+      <x>590</x>
+      <y>60</y>
       <width>81</width>
       <height>31</height>
      </rect>
@@ -499,8 +499,8 @@
    <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
-      <x>370</x>
-      <y>30</y>
+      <x>350</x>
+      <y>10</y>
       <width>311</width>
       <height>41</height>
      </rect>
@@ -528,8 +528,8 @@
    <widget class="QGroupBox" name="groupBox_2">
     <property name="geometry">
      <rect>
-      <x>730</x>
-      <y>30</y>
+      <x>690</x>
+      <y>10</y>
       <width>341</width>
       <height>621</height>
      </rect>
@@ -823,8 +823,8 @@ p, li { white-space: pre-wrap; }
     <widget class="QPushButton" name="Save">
      <property name="geometry">
       <rect>
-       <x>280</x>
-       <y>590</y>
+       <x>150</x>
+       <y>550</y>
        <width>61</width>
        <height>31</height>
       </rect>
@@ -846,40 +846,39 @@ p, li { white-space: pre-wrap; }
       <string>Save</string>
      </property>
     </widget>
-   </widget>
-   <widget class="QPushButton" name="BackHome">
-    <property name="geometry">
-     <rect>
-      <x>970</x>
-      <y>690</y>
-      <width>111</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Segoe UI</family>
-      <pointsize>11</pointsize>
-     </font>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QPushButton{
+    <widget class="QPushButton" name="BackHome">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>550</y>
+       <width>111</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI</family>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton{
 	color: rgb(238, 238, 238);
 
 	
 	background-color: rgb(220, 95, 0);
 }</string>
-    </property>
-    <property name="text">
-     <string>Back to Home</string>
-    </property>
+     </property>
+     <property name="text">
+      <string>Back to Home</string>
+     </property>
+    </widget>
    </widget>
    <zorder>groupBox_2</zorder>
    <zorder>groupBox</zorder>
    <zorder>ExistingRunTimes</zorder>
    <zorder>label_5</zorder>
    <zorder>RemoveTiming</zorder>
-   <zorder>BackHome</zorder>
   </widget>
  </widget>
  <resources/>

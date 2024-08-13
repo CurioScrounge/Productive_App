@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'SettingsQFYKLK.ui'
+## Form generated from reading UI file 'SettingsHOADTH.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -18,7 +18,7 @@ class Ui_Settings(object):
     def setupUi(self, Settings):
         if not Settings.objectName():
             Settings.setObjectName(u"Settings")
-        Settings.resize(1100, 750)
+        Settings.resize(1045, 600)
         sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -38,7 +38,7 @@ class Ui_Settings(object):
         self.centralwidget.setFont(font1)
         self.ExistingRunTimes = QListWidget(self.centralwidget)
         self.ExistingRunTimes.setObjectName(u"ExistingRunTimes")
-        self.ExistingRunTimes.setGeometry(QRect(350, 120, 341, 601))
+        self.ExistingRunTimes.setGeometry(QRect(340, 100, 341, 491))
         font2 = QFont()
         font2.setFamily(u"Segoe UI")
         font2.setPointSize(12)
@@ -50,7 +50,7 @@ class Ui_Settings(object):
 "}")
         self.groupBox = QGroupBox(self.centralwidget)
         self.groupBox.setObjectName(u"groupBox")
-        self.groupBox.setGeometry(QRect(10, 10, 321, 641))
+        self.groupBox.setGeometry(QRect(40, 0, 321, 571))
         self.groupBox.setStyleSheet(u"QGroupBox{\n"
 "	border:none;\n"
 "}\n"
@@ -59,7 +59,7 @@ class Ui_Settings(object):
         self.groupBox.setFlat(False)
         self.label_3 = QLabel(self.groupBox)
         self.label_3.setObjectName(u"label_3")
-        self.label_3.setGeometry(QRect(10, 20, 301, 41))
+        self.label_3.setGeometry(QRect(10, 0, 301, 41))
         font3 = QFont()
         font3.setFamily(u"Segoe UI")
         font3.setPointSize(19)
@@ -72,7 +72,7 @@ class Ui_Settings(object):
         self.label_3.setAlignment(Qt.AlignCenter)
         self.verticalLayoutWidget = QWidget(self.groupBox)
         self.verticalLayoutWidget.setObjectName(u"verticalLayoutWidget")
-        self.verticalLayoutWidget.setGeometry(QRect(20, 110, 291, 127))
+        self.verticalLayoutWidget.setGeometry(QRect(20, 70, 291, 91))
         self.verticalLayout = QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -142,7 +142,7 @@ class Ui_Settings(object):
 
         self.label_4 = QLabel(self.groupBox)
         self.label_4.setObjectName(u"label_4")
-        self.label_4.setGeometry(QRect(30, 240, 181, 31))
+        self.label_4.setGeometry(QRect(30, 170, 181, 31))
         font6 = QFont()
         font6.setFamily(u"Segoe UI")
         font6.setPointSize(15)
@@ -154,7 +154,7 @@ class Ui_Settings(object):
 "}")
         self.monday = QCheckBox(self.groupBox)
         self.monday.setObjectName(u"monday")
-        self.monday.setGeometry(QRect(30, 310, 121, 21))
+        self.monday.setGeometry(QRect(30, 220, 121, 21))
         font7 = QFont()
         font7.setFamily(u"Segoe UI")
         font7.setPointSize(13)
@@ -165,7 +165,7 @@ class Ui_Settings(object):
 "}")
         self.tuesday = QCheckBox(self.groupBox)
         self.tuesday.setObjectName(u"tuesday")
-        self.tuesday.setGeometry(QRect(30, 350, 121, 21))
+        self.tuesday.setGeometry(QRect(30, 260, 121, 21))
         self.tuesday.setFont(font7)
         self.tuesday.setStyleSheet(u"QCheckBox{\n"
 "	\n"
@@ -173,7 +173,7 @@ class Ui_Settings(object):
 "}")
         self.wednesday = QCheckBox(self.groupBox)
         self.wednesday.setObjectName(u"wednesday")
-        self.wednesday.setGeometry(QRect(30, 390, 121, 21))
+        self.wednesday.setGeometry(QRect(30, 300, 121, 21))
         self.wednesday.setFont(font7)
         self.wednesday.setStyleSheet(u"QCheckBox{\n"
 "	\n"
@@ -181,7 +181,7 @@ class Ui_Settings(object):
 "}")
         self.thursday = QCheckBox(self.groupBox)
         self.thursday.setObjectName(u"thursday")
-        self.thursday.setGeometry(QRect(30, 430, 121, 21))
+        self.thursday.setGeometry(QRect(30, 340, 121, 21))
         self.thursday.setFont(font7)
         self.thursday.setStyleSheet(u"QCheckBox{\n"
 "	\n"
@@ -189,7 +189,7 @@ class Ui_Settings(object):
 "}")
         self.friday = QCheckBox(self.groupBox)
         self.friday.setObjectName(u"friday")
-        self.friday.setGeometry(QRect(30, 470, 121, 21))
+        self.friday.setGeometry(QRect(30, 380, 121, 21))
         self.friday.setFont(font7)
         self.friday.setStyleSheet(u"QCheckBox{\n"
 "	\n"
@@ -197,7 +197,7 @@ class Ui_Settings(object):
 "}")
         self.saturday = QCheckBox(self.groupBox)
         self.saturday.setObjectName(u"saturday")
-        self.saturday.setGeometry(QRect(30, 510, 121, 21))
+        self.saturday.setGeometry(QRect(30, 420, 121, 21))
         self.saturday.setFont(font7)
         self.saturday.setStyleSheet(u"QCheckBox{\n"
 "	\n"
@@ -205,7 +205,7 @@ class Ui_Settings(object):
 "}")
         self.sunday = QCheckBox(self.groupBox)
         self.sunday.setObjectName(u"sunday")
-        self.sunday.setGeometry(QRect(30, 550, 121, 21))
+        self.sunday.setGeometry(QRect(30, 460, 121, 21))
         self.sunday.setFont(font7)
         self.sunday.setStyleSheet(u"QCheckBox{\n"
 "	\n"
@@ -213,7 +213,7 @@ class Ui_Settings(object):
 "}")
         self.AddTiming = QPushButton(self.groupBox)
         self.AddTiming.setObjectName(u"AddTiming")
-        self.AddTiming.setGeometry(QRect(30, 610, 101, 31))
+        self.AddTiming.setGeometry(QRect(30, 510, 101, 31))
         self.AddTiming.setFont(font2)
         self.AddTiming.setStyleSheet(u"QPushButton{\n"
 "	color: rgb(238, 238, 238);\n"
@@ -222,7 +222,7 @@ class Ui_Settings(object):
 "}")
         self.RemoveTiming = QPushButton(self.centralwidget)
         self.RemoveTiming.setObjectName(u"RemoveTiming")
-        self.RemoveTiming.setGeometry(QRect(610, 80, 81, 31))
+        self.RemoveTiming.setGeometry(QRect(590, 60, 81, 31))
         font8 = QFont()
         font8.setFamily(u"Segoe UI")
         font8.setPointSize(11)
@@ -234,7 +234,7 @@ class Ui_Settings(object):
 "}")
         self.label_5 = QLabel(self.centralwidget)
         self.label_5.setObjectName(u"label_5")
-        self.label_5.setGeometry(QRect(370, 30, 311, 41))
+        self.label_5.setGeometry(QRect(350, 10, 311, 41))
         self.label_5.setFont(font3)
         self.label_5.setStyleSheet(u"QLabel{\n"
 "	color: rgb(220, 95, 0);\n"
@@ -242,7 +242,7 @@ class Ui_Settings(object):
         self.label_5.setAlignment(Qt.AlignCenter)
         self.groupBox_2 = QGroupBox(self.centralwidget)
         self.groupBox_2.setObjectName(u"groupBox_2")
-        self.groupBox_2.setGeometry(QRect(730, 30, 341, 621))
+        self.groupBox_2.setGeometry(QRect(690, 10, 341, 621))
         self.groupBox_2.setStyleSheet(u"QGroupBox{\n"
 "	border:none;\n"
 "}")
@@ -342,7 +342,7 @@ class Ui_Settings(object):
 "}")
         self.Save = QPushButton(self.groupBox_2)
         self.Save.setObjectName(u"Save")
-        self.Save.setGeometry(QRect(280, 590, 61, 31))
+        self.Save.setGeometry(QRect(150, 550, 61, 31))
         font12 = QFont()
         font12.setFamily(u"Segoe UI")
         font12.setPointSize(9)
@@ -352,9 +352,9 @@ class Ui_Settings(object):
 "\n"
 "	background-color: rgb(104, 109, 118);\n"
 "}")
-        self.BackHome = QPushButton(self.centralwidget)
+        self.BackHome = QPushButton(self.groupBox_2)
         self.BackHome.setObjectName(u"BackHome")
-        self.BackHome.setGeometry(QRect(970, 690, 111, 31))
+        self.BackHome.setGeometry(QRect(230, 550, 111, 31))
         self.BackHome.setFont(font8)
         self.BackHome.setStyleSheet(u"QPushButton{\n"
 "	color: rgb(238, 238, 238);\n"
@@ -368,7 +368,6 @@ class Ui_Settings(object):
         self.ExistingRunTimes.raise_()
         self.label_5.raise_()
         self.RemoveTiming.raise_()
-        self.BackHome.raise_()
 
         self.retranslateUi(Settings)
 

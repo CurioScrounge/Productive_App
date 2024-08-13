@@ -32,8 +32,8 @@ from ui_Settings import Ui_Settings
 
 # File to store settings
 SETTINGS_FILE = 'settings.json'
-SCREEN_WIDTH = 1100
-SCREEN_HEIGHT = 750
+SCREEN_WIDTH = 1045
+SCREEN_HEIGHT = 600
 
 # Load settings from file
 def load_settings():

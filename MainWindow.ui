@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1100</width>
-    <height>750</height>
+    <width>1045</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -31,7 +31,7 @@ QCheckBox{
       <x>20</x>
       <y>20</y>
       <width>311</width>
-      <height>701</height>
+      <height>571</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -49,9 +49,9 @@ border:none
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>250</y>
+       <y>190</y>
        <width>291</width>
-       <height>451</height>
+       <height>381</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="Categories"/>
@@ -61,7 +61,7 @@ border:none
       <rect>
        <x>0</x>
        <y>10</y>
-       <width>311</width>
+       <width>281</width>
        <height>31</height>
       </rect>
      </property>
@@ -89,9 +89,9 @@ border:none
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>50</y>
+       <y>40</y>
        <width>291</width>
-       <height>91</height>
+       <height>71</height>
       </rect>
      </property>
      <property name="font">
@@ -117,9 +117,9 @@ color: rgb(238, 238, 238);
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>140</y>
+       <y>110</y>
        <width>291</width>
-       <height>91</height>
+       <height>71</height>
       </rect>
      </property>
      <property name="font">
@@ -134,7 +134,7 @@ color: rgb(238, 238, 238);
 }</string>
      </property>
      <property name="text">
-      <string>Our algorithm will then detect websites similar to those under the checked categories, and categorise them as unproductive when accessed by you.</string>
+      <string>The algorithm will then detect websites similar to those under the checked categories, and categorise them as unproductive when accessed by you.</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
@@ -146,8 +146,8 @@ color: rgb(238, 238, 238);
      <rect>
       <x>360</x>
       <y>30</y>
-      <width>691</width>
-      <height>711</height>
+      <width>671</width>
+      <height>561</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -166,7 +166,7 @@ border:none
       <rect>
        <x>50</x>
        <y>40</y>
-       <width>571</width>
+       <width>551</width>
        <height>31</height>
       </rect>
      </property>
@@ -225,9 +225,9 @@ background-color: rgb(104, 109, 118);
     <widget class="QPushButton" name="AddWhitelist">
      <property name="geometry">
       <rect>
-       <x>630</x>
+       <x>610</x>
        <y>40</y>
-       <width>61</width>
+       <width>51</width>
        <height>31</height>
       </rect>
      </property>
@@ -260,8 +260,8 @@ background-color: rgb(104, 109, 118);
       <rect>
        <x>10</x>
        <y>80</y>
-       <width>631</width>
-       <height>251</height>
+       <width>611</width>
+       <height>191</height>
       </rect>
      </property>
      <property name="font">
@@ -280,7 +280,7 @@ background-color: rgb(104, 109, 118);
     <widget class="QLabel" name="label_2">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>0</x>
        <y>0</y>
        <width>651</width>
        <height>20</height>
@@ -309,7 +309,7 @@ background-color: rgb(104, 109, 118);
     <widget class="QPushButton" name="RemoveWhitelist">
      <property name="geometry">
       <rect>
-       <x>660</x>
+       <x>630</x>
        <y>90</y>
        <width>31</width>
        <height>31</height>
@@ -345,7 +345,7 @@ background-color: rgb(104, 109, 118);
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>400</y>
+       <y>320</y>
        <width>41</width>
        <height>31</height>
       </rect>
@@ -378,9 +378,9 @@ background-color: rgb(104, 109, 118);
     <widget class="QPushButton" name="AddBlacklist">
      <property name="geometry">
       <rect>
-       <x>630</x>
-       <y>400</y>
-       <width>61</width>
+       <x>610</x>
+       <y>320</y>
+       <width>51</width>
        <height>31</height>
       </rect>
      </property>
@@ -411,8 +411,8 @@ background-color: rgb(104, 109, 118);
     <widget class="QPushButton" name="RemoveBlacklist">
      <property name="geometry">
       <rect>
-       <x>660</x>
-       <y>450</y>
+       <x>630</x>
+       <y>360</y>
        <width>31</width>
        <height>31</height>
       </rect>
@@ -447,8 +447,8 @@ background-color: rgb(104, 109, 118);
      <property name="geometry">
       <rect>
        <x>50</x>
-       <y>400</y>
-       <width>571</width>
+       <y>320</y>
+       <width>551</width>
        <height>31</height>
       </rect>
      </property>
@@ -473,10 +473,10 @@ background-color: rgb(104, 109, 118);
     <widget class="QListWidget" name="Blacklist">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>440</y>
-       <width>631</width>
-       <height>261</height>
+       <x>0</x>
+       <y>360</y>
+       <width>611</width>
+       <height>201</height>
       </rect>
      </property>
      <property name="font">
@@ -495,9 +495,9 @@ background-color: rgb(104, 109, 118);
     <widget class="QLabel" name="label_3">
      <property name="geometry">
       <rect>
-       <x>20</x>
-       <y>360</y>
-       <width>651</width>
+       <x>0</x>
+       <y>290</y>
+       <width>671</width>
        <height>20</height>
       </rect>
      </property>
@@ -525,7 +525,7 @@ background-color: rgb(104, 109, 118);
    <widget class="QPushButton" name="Settings">
     <property name="geometry">
      <rect>
-      <x>1020</x>
+      <x>960</x>
       <y>10</y>
       <width>71</width>
       <height>31</height>
