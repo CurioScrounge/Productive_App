@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'SettingsHOADTH.ui'
+## Form generated from reading UI file 'SettingsgVjgoa.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -50,7 +50,7 @@ class Ui_Settings(object):
 "}")
         self.groupBox = QGroupBox(self.centralwidget)
         self.groupBox.setObjectName(u"groupBox")
-        self.groupBox.setGeometry(QRect(40, 0, 321, 571))
+        self.groupBox.setGeometry(QRect(10, 10, 321, 571))
         self.groupBox.setStyleSheet(u"QGroupBox{\n"
 "	border:none;\n"
 "}\n"
@@ -234,7 +234,7 @@ class Ui_Settings(object):
 "}")
         self.label_5 = QLabel(self.centralwidget)
         self.label_5.setObjectName(u"label_5")
-        self.label_5.setGeometry(QRect(350, 10, 311, 41))
+        self.label_5.setGeometry(QRect(350, 10, 321, 41))
         self.label_5.setFont(font3)
         self.label_5.setStyleSheet(u"QLabel{\n"
 "	color: rgb(220, 95, 0);\n"

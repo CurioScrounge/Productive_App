@@ -133,6 +133,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+         # Enable DPI scaling
+        app.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+        app.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
 
         self.currently_in_session = False
         self.model_trained = False
@@ -140,8 +143,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Initialize the machine learning model
         self.vectorizer = CountVectorizer()
         self.model = MultinomialNB()
-
-        self.setFixedSize(SCREEN_WIDTH, SCREEN_HEIGHT)
 
         self.settings = load_settings()
         self.wait_time = int(self.settings.get("wait_time", "5"))
@@ -298,7 +299,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.settings["categories"] = self.categories
         save_settings(self.settings)
         if self.model_trained:
-            self.train_model()  # Retrain the model when categories change
+            self.start_training()  # Retrain the model when categories change
 
     def populate_whitelisted_sites(self):
         for site in self.whitelisted_sites:
@@ -417,7 +418,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         content_features = self.vectorizer.transform([text])
         prediction = self.model.predict(content_features)
         return prediction[0] == "unproductive"
+    
+    def start_training(self):
+            if self.model_trainer.isRunning():
+                self.model_trainer.terminate()
 
+            self.model_trainer = ModelTrainer(self)
+            self.model_trainer.training_finished.connect(self.on_training_finished)
+            self.model_trainer.start()
+            
     def train_model(self):
         data = []
         labels = []
@@ -487,8 +496,10 @@ class SettingsPage(QMainWindow, Ui_Settings):
         self.ui = Ui_Settings()
         self.ui.setupUi(self)
         self.sessions = self.parent().sessions
+         # Enable DPI scaling
+        app.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+        app.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
 
-        self.setFixedSize(SCREEN_WIDTH, SCREEN_HEIGHT)
 
         self.ui.AddTiming.clicked.connect(self.add_session)
         self.ui.RemoveTiming.clicked.connect(self.remove_session)
