@@ -1,4 +1,4 @@
-{
+{//default settings of program
     "wait_time": "5",
     "sessions": [
         {
@@ -27,7 +27,7 @@
     "whitelisted_sites": [],
     "blacklisted_sites": [],
     "productive_sites": [
-        "docs.google.com",
+        "docs.google.com", //wanted to list some sites as default productive, knowing what my client accesses for school
         "slides.google.com",
         "mail.google.com",
         "scholar.google.com",
@@ -37,5 +37,5 @@
         "canva.com"
     ],
     "override_delay": false,
-    "warning_message": "You are straying towards the dark side... For your own good, please return to being productive!"
+    "warning_message": "You are straying towards the dark side... For your own good, please return to being productive!" //default warning message
 }

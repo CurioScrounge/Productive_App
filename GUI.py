@@ -11,9 +11,11 @@ import threading
 import requests
 from bs4 import BeautifulSoup
 import re
+import os
 
 from PyQt5.QtCore import QThread, pyqtSignal
 
+#set up model trainer thread so UI can still be responsive while... training
 class ModelTrainer(QThread):
     training_finished = pyqtSignal()
 
@@ -25,17 +27,17 @@ class ModelTrainer(QThread):
         self.main_window.train_model()
         self.training_finished.emit()
 
-# Import the generated UI files
+# Import the UI files I generated using PyQt designer
 from ui_Splash import Ui_SplashScreen
 from ui_MainWindow import Ui_MainWindow
 from ui_Settings import Ui_Settings
 
-# File to store settings
+# Link to my file to save settings
 SETTINGS_FILE = 'settings.json'
-SCREEN_WIDTH = 1045
+SCREEN_WIDTH = 1045 #Currently not in use, but ... 
 SCREEN_HEIGHT = 600
 
-# Load settings from file
+# Load settings saved in settings file, at start of program
 def load_settings():
     try:
         with open(SETTINGS_FILE, 'r') as f:
@@ -53,12 +55,12 @@ def load_settings():
             "categories": {},
             "whitelisted_sites": [],
             "blacklisted_sites": [],
-            "productive_sites": [],  # Initialize productive_sites
+            "productive_sites": [],  #
             "override_delay": False,
             "warning_message": "Unproductive activity detected! For your own good, please return to being productive!"
         }
 
-# Save settings to file
+# Save new settings to settings.json
 def save_settings(settings):
     settings_copy = {
         "wait_time": settings["wait_time"],
@@ -80,7 +82,7 @@ def save_settings(settings):
     with open(SETTINGS_FILE, 'w') as f:
         json.dump(settings_copy, f, indent=4)
 
-# Splash Screen Class
+# My Splash Screen
 class SplashScreen(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
@@ -88,9 +90,8 @@ class SplashScreen(QMainWindow):
         self.ui.setupUi(self)
 
         self.setWindowFlag(Qt.FramelessWindowHint)
-        self.setAttribute(Qt.WA_TranslucentBackground)
+        self.setAttribute(Qt.WA_TranslucentBackground) #Not too sure what this does, just saw it on a tutorial
 
-        # Define counter as an instance variable
         self.counter = 0
 
         self.timer = QtCore.QTimer()
@@ -99,14 +100,15 @@ class SplashScreen(QMainWindow):
 
         self.show()
 
-        # Create the main window instance
+        # My main window instance
         self.main_window = MainWindow()
 
-        # Start training the model
+        # Start training the ML unproductive activity detection model
         self.model_trainer = ModelTrainer(self.main_window)
         self.model_trainer.training_finished.connect(self.on_training_finished)
         self.model_trainer.start()
 
+    #Existing purely for visual reasons: to make the progress bar move
     def progress(self):
         self.ui.progressBar.setValue(self.counter)
 
@@ -121,29 +123,29 @@ class SplashScreen(QMainWindow):
         print("Model training completed.")
         self.main_window.on_training_finished()
 
-import pytesseract
-import os
 
-# Determine the path to the Tesseract executable
+# Have to set up path to tesseract... 
 tesseract_path = os.path.join(os.path.dirname(__file__), 'Tesseract-OCR', 'tesseract.exe')
 pytesseract.pytesseract.tesseract_cmd = tesseract_path
 
-
+#My mainwindow
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-         # Enable DPI scaling
+        
+         # Enable DPI scaling, apparently helps with scaling but clearly not
         app.setAttribute(Qt.AA_EnableHighDpiScaling, True)
         app.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
 
         self.currently_in_session = False
         self.model_trained = False
 
-        # Initialize the machine learning model
+        # Initialize the ML model
         self.vectorizer = CountVectorizer()
         self.model = MultinomialNB()
 
+        #Set up.. from previously saved settings
         self.settings = load_settings()
         self.wait_time = int(self.settings.get("wait_time", "5"))
         self.sessions = self.settings.get("sessions", [])
@@ -166,6 +168,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.RemoveBlacklist.clicked.connect(self.remove_selected_from_blacklist)
         self.Settings.clicked.connect(self.open_settings)
 
+        #Unproductive category names w example site links
         self.category_sites = {
             "Social Media": ["facebook.com", "twitter.com", "instagram.com", "github.com"],
             "Games": ["crazygames.com", "store.epicgames.com", "store.steampowered.com"],
@@ -176,17 +179,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             "Productivity Killers": ["nytimes.com/games/wordle", "nytimes.com/puzzles/spelling-bee", "nytimes.com/crosswords/game/mini"]
         }
 
+        
         self.populate_unproductive_categories()
         self.populate_whitelisted_sites()
         self.populate_blacklisted_sites()
 
         self.session_check_timer = QTimer()
         self.session_check_timer.timeout.connect(self.check_sessions)
-        self.session_check_timer.start(10000)  # Check every 10 seconds
+        self.session_check_timer.start(10000)  # Check every 10 seconds for whether current time is within an existing session time
 
         self.activity_monitor_timer = QTimer()
         self.activity_monitor_timer.timeout.connect(self.detect_unproductive_activity)
-        self.activity_monitor_timer.start(15000)  # Check every 15 seconds
+        self.activity_monitor_timer.start(15000)  # Check every 15 seconds for screen activity
 
     def on_training_finished(self):
         self.model_trained = True
@@ -201,19 +205,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             text = pytesseract.image_to_string(image)
             return text
         except pytesseract.TesseractNotFoundError:
-            print("Tesseract is not installed or not found in PATH.")
+            print("Tesseract is not found in the path used")
             return ""
         except Exception as e:
-            print(f"Error during OCR processing: {e}")
+            print(f"{e}")
             return ""
 
     def detect_unproductive_activity(self):
         if not self.currently_in_session:
-            print("Current time is not within any session. Ignoring activity detection.")
+            print("Current time is not within any session. Will not proceed with activity detection.")
             return
 
         if not self.model_trained:
-            print("Model is not yet trained. Ignoring activity detection.")
+            print("Model is not yet trained. Will not proceed with activity detection.")
             return
 
         print("Detecting unproductive activity...")
@@ -221,14 +225,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         screen_text = self.extract_text_from_image(screen_image)
 
         if screen_text.strip():
-            print("Captured text from screen:", screen_text)
+            print("Extracted text from screen:", screen_text)
             self.unproductive_flag = self.predict_unproductive(screen_text)
             print(f"Screen text is {'unproductive' if self.unproductive_flag else 'productive'}.")
 
-            if self.unproductive_flag:
+            if self.unproductive_flag: # checks if the unproductive flag, which symbolises whether unproductive activity has been detected
                 if self.override_delay:
                     print("Override delay is enabled, displaying warning message immediately.")
-                    self.display_warning_message()
+                    self.display_warning_message() #if the override delay button in settings window is clicked, a warning message is shown immediately upon unproductive activity detection
                 else:
                     if not self.unproductive_timer.isValid():
                         print("Starting unproductive timer.")
@@ -251,7 +255,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def show_warning_message(self):
         dialog = QDialog(self)
         dialog.setWindowTitle("Warning")
-        dialog.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint)
+        dialog.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint) #So it shows up and pops up
         dialog.showFullScreen()
 
         layout = QVBoxLayout(dialog)
@@ -299,7 +303,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.settings["categories"] = self.categories
         save_settings(self.settings)
         if self.model_trained:
-            self.start_training()  # Retrain the model when categories change
+            self.start_training()  # Retrain the model when chosen unproductive categories change
 
     def populate_whitelisted_sites(self):
         for site in self.whitelisted_sites:
@@ -316,7 +320,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             save_settings(self.settings)
             self.EditWhitelist.clear()
         else:
-            QMessageBox.warning(self, "Input Error", "Please enter a website or file address to whitelist.")
+            QMessageBox.warning(self, "Input Error", "Please enter a website to whitelist.")
 
     def browse_file(self):
         file_path, _ = QFileDialog.getOpenFileName(self, "Select File to Whitelist")
@@ -326,7 +330,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def remove_selected_from_whitelist(self):
         selected_items = self.Whitelist.selectedItems()
         if not selected_items:
-            QMessageBox.warning(self, "Selection Error", "Please select an item to remove.")
+            QMessageBox.warning(self, "Selection Error", "Please select a link to remove.")
             return
         for item in selected_items:
             self.whitelisted_sites.remove(item.text())
@@ -349,7 +353,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             save_settings(self.settings)
             self.EditBlacklist.clear()
         else:
-            QMessageBox.warning(self, "Input Error", "Please enter a website or file address to blacklist.")
+            QMessageBox.warning(self, "Input Error", "Please enter a website to blacklist.")
 
     def browse_file_blacklist(self):
         file_path, _ = QFileDialog.getOpenFileName(self, "Select File to Blacklist")
@@ -359,7 +363,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def remove_selected_from_blacklist(self):
         selected_items = self.Blacklist.selectedItems()
         if not selected_items:
-            QMessageBox.warning(self, "Selection Error", "Please select an item to remove.")
+            QMessageBox.warning(self, "Selection Error", "Please select a link to remove.")
             return
         for item in selected_items:
             self.blacklisted_sites.remove(item.text())
@@ -382,7 +386,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def check_sessions(self):
         current_time = QTime.currentTime()
-        current_day = QtCore.QDate.currentDate().dayOfWeek() - 1  # 0=Monday, 1=Tuesday, ..., 6=Sunday
+        current_day = QtCore.QDate.currentDate().dayOfWeek() - 1  # Note to self: 0=Monday, 1=Tuesday ... 6=Sunday
 
         in_session = False
         for session in self.sessions:
@@ -390,13 +394,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             end_time = session["end_time"]
 
             if session["days"][current_day]:
-                if end_time < start_time:  # End time is past midnight
+                if end_time < start_time:  # For if end time is past midnight
                     if current_time >= start_time or current_time <= end_time:
                         in_session = True
                         print(f"Current time {current_time.toString()} is within session: {start_time.toString()} - {end_time.toString()} (spans midnight)")
                         break
                 else:
-                    if start_time <= current_time <= end_time:
+                    if start_time <= current_time <= end_time: #
                         in_session = True
                         print(f"Current time {current_time.toString()} is within session: {start_time.toString()} - {end_time.toString()}")
                         break
@@ -409,7 +413,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.currently_in_session = False
 
     def monitor_activity(self):
-        self.activity_monitor_timer.start()
+        self.activity_monitor_timer.start() #start of checking whether screen activity is unproductive..
 
     def predict_unproductive(self, text):
         if not self.currently_in_session or not self.model_trained:
@@ -431,7 +435,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         data = []
         labels = []
 
-        # Add sites from category_sites
+        # Use the example sites listed from chosen unproductive categories to train
         for category, examples in self.category_sites.items():
             if self.categories.get(category):
                 for site in examples:
@@ -446,7 +450,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         data.append(content)
                         labels.append("productive")
 
-        # Add whitelisted sites as productive
+        # Train ML to detect content of whitelisted sites as productive
         for site in self.whitelisted_sites:
             content = self.fetch_website_content("http://" + site)
             if content:
@@ -460,7 +464,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 data.append(content)
                 labels.append("unproductive")
 
-        # Add manually specified productive sites
+        # Add manually specified productive sites (from settings.json)
         for site in self.productive_sites:
             content = self.fetch_website_content("http://" + site)
             if content:
@@ -499,7 +503,6 @@ class SettingsPage(QMainWindow, Ui_Settings):
          # Enable DPI scaling
         app.setAttribute(Qt.AA_EnableHighDpiScaling, True)
         app.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
-
 
         self.ui.AddTiming.clicked.connect(self.add_session)
         self.ui.RemoveTiming.clicked.connect(self.remove_session)
