@@ -1,8 +1,8 @@
-{//default settings of program
+{
     "wait_time": "5",
     "sessions": [
         {
-            "start_time": "12:00",
+            "start_time": "10:00",
             "end_time": "17:00",
             "days": [
                 true,
@@ -16,26 +16,27 @@
         }
     ],
     "categories": {
-        "Social Media": false,
+        "Social Media": true,
         "Games": false,
-        "Video Entertainment": false,
+        "Video Entertainment": true,
         "Visual Entertainment": false,
-        "Forums": false,
+        "Forums": true,
         "Online Shopping": false,
-        "Productivity Killers": false
+        "Productivity Killers": true
     },
     "whitelisted_sites": [],
     "blacklisted_sites": [],
     "productive_sites": [
-        "docs.google.com", //wanted to list some sites as default productive, knowing what my client accesses for school
+        "docs.google.com",
         "slides.google.com",
         "mail.google.com",
         "scholar.google.com",
         "khanacademy.org",
         "coursera.org",
         "edx.org",
-        "canva.com"
+        "canva.com",
+        "drive.google.com"
     ],
-    "override_delay": false,
-    "warning_message": "You are straying towards the dark side... For your own good, please return to being productive!" //default warning message
+    "override_delay": true,
+    "warning_message": "You are straying towards the dark side... For your own good, please return to being productive!"
 }

@@ -1,6 +1,6 @@
 import sys
 import json
-from PyQt5.QtWidgets import QApplication, QMainWindow, QCheckBox, QListWidgetItem, QFileDialog, QDialog, QLabel, QVBoxLayout, QPushButton, QMessageBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QCheckBox, QListWidgetItem, QFileDialog, QDialog, QLabel, QVBoxLayout, QPushButton, QMessageBox,QDesktopWidget
 from PyQt5.QtCore import Qt, QTime, QTimer, QElapsedTimer, pyqtSlot, QMetaObject
 from PyQt5 import QtCore
 from sklearn.feature_extraction.text import CountVectorizer
@@ -14,6 +14,9 @@ import re
 import os
 
 from PyQt5.QtCore import QThread, pyqtSignal
+os.environ["QT_ENABLE_HIGHDPI_SCALING"]   = "1"
+os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
+os.environ["QT_SCALE_FACTOR"]             = "1"
 
 #set up model trainer thread so UI can still be responsive while... training
 class ModelTrainer(QThread):
@@ -29,13 +32,11 @@ class ModelTrainer(QThread):
 
 # Import the UI files I generated using PyQt designer
 from ui_Splash import Ui_SplashScreen
-from ui_MainWindow import Ui_MainWindow
-from ui_Settings import Ui_Settings
+from ui_MainWindow2 import Ui_MainWindow
+from ui_Settings2 import Ui_Settings
 
 # Link to my file to save settings
 SETTINGS_FILE = 'settings.json'
-SCREEN_WIDTH = 1045 #Currently not in use, but ... 
-SCREEN_HEIGHT = 600
 
 # Load settings saved in settings file, at start of program
 def load_settings():
@@ -88,6 +89,8 @@ class SplashScreen(QMainWindow):
         QMainWindow.__init__(self)
         self.ui = Ui_SplashScreen()
         self.ui.setupUi(self)
+        self.center()
+        
 
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground) #Not too sure what this does, just saw it on a tutorial
@@ -107,6 +110,12 @@ class SplashScreen(QMainWindow):
         self.model_trainer = ModelTrainer(self.main_window)
         self.model_trainer.training_finished.connect(self.on_training_finished)
         self.model_trainer.start()
+    
+    def center(self):
+            qr = self.frameGeometry()
+            cp = QDesktopWidget().availableGeometry().center()
+            qr.moveCenter(cp)
+            self.move(qr.topLeft())
 
     #Existing purely for visual reasons: to make the progress bar move
     def progress(self):
@@ -114,7 +123,7 @@ class SplashScreen(QMainWindow):
 
         if self.counter > 100:
             self.timer.stop()
-            self.main_window.show()
+            self.main_window.showMaximized()
             self.close()
 
         self.counter += 1
@@ -133,11 +142,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        
-         # Enable DPI scaling, apparently helps with scaling but clearly not
-        app.setAttribute(Qt.AA_EnableHighDpiScaling, True)
-        app.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
-
+         
         self.currently_in_session = False
         self.model_trained = False
 
@@ -167,16 +172,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.BrowseFile_2.clicked.connect(self.browse_file_blacklist)
         self.RemoveBlacklist.clicked.connect(self.remove_selected_from_blacklist)
         self.Settings.clicked.connect(self.open_settings)
+        
 
         #Unproductive category names w example site links
         self.category_sites = {
-            "Social Media": ["facebook.com", "twitter.com", "instagram.com", "github.com"],
-            "Games": ["crazygames.com", "store.epicgames.com", "store.steampowered.com"],
-            "Video Entertainment": ["youtube.com", "netflix.com", "primevideo.com"],
+            "Social Media": ["facebook.com", "twitter.com", "instagram.com", "discord.com"],
+            "Games": ["crazygames.com", "store.epicgames.com", "store.steampowered.com", "poki.com","minesweeper.online"],
+            "Video Entertainment": ["youtube.com", "netflix.com", "primevideo.com", "disneyplus.com", "sky.com"],
             "Visual Entertainment": ["globalcomix.com", "mangadex.org", "manganato.com", "anime-planet.com", "readallcomics.com"],
-            "Forums": ["reddit.com", "quora.com"],
-            "Online Shopping": ["amazon.com", "alibaba.com", "aliexpress.com"],
-            "Productivity Killers": ["nytimes.com/games/wordle", "nytimes.com/puzzles/spelling-bee", "nytimes.com/crosswords/game/mini"]
+            "Forums": ["reddit.com", "quora.com", "discord.com","steam.com"],
+            "Online Shopping": ["amazon.com", "alibaba.com", "aliexpress.com", "zalora.com","eBay.com","taobao.com","hktvmall.com"],
+            "Productivity Killers": ["nytimes.com/games/wordle", "nytimes.com/puzzles/spelling-bee", "nytimes.com/crosswords/game/mini",""]
         }
 
         
@@ -192,6 +198,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.activity_monitor_timer.timeout.connect(self.detect_unproductive_activity)
         self.activity_monitor_timer.start(15000)  # Check every 15 seconds for screen activity
 
+    def center(self):
+            qr = self.frameGeometry()
+            cp = QDesktopWidget().availableGeometry().center()
+            qr.moveCenter(cp)
+            self.move(qr.topLeft())
+            
     def on_training_finished(self):
         self.model_trained = True
         print("Model training completed.")
@@ -290,7 +302,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     background: transparent;
                 }
             """)
-            tooltip_text = "Examples: " + ", ".join(examples)
+            if category=="Social Media":
+                tooltip_text = "Examples: facebook, twitter, instagram, github"
+            elif category=="Games":
+                tooltip_text="Examples: crazygames, epicgames, steam"
+            elif category=="Video Entertainment":
+                tooltip_text="Examples: youtube, netflix, prime video, disney plus"
+            elif category=="Visual Entertainment":
+                tooltip_text="Examples: comic and manga sites"
+            elif category=="Forums":
+                tooltip_text="Examples: reddit, quora"
+            elif category=="Online Shopping":
+                tooltip_text="Examples: amazon, taobao, aliexpress.."
+            else:
+                tooltip_text="Examples: wordle, spelling bee, crosswords.."
             checkbox.setToolTip(tooltip_text)
             self.Categories.addWidget(checkbox)
             checkbox.stateChanged.connect(lambda state, name=category: self.update_category_state(name, state))
@@ -373,7 +398,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def open_settings(self):
         self.settings_page = SettingsPage(self)
-        self.settings_page.show()
+        self.settings_page.showMaximized()
         self.hide()
 
     def set_wait_time(self, wait_time):
@@ -424,12 +449,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         return prediction[0] == "unproductive"
     
     def start_training(self):
+            self.model_trainer = ModelTrainer(self)
             if self.model_trainer.isRunning():
                 self.model_trainer.terminate()
-
-            self.model_trainer = ModelTrainer(self)
             self.model_trainer.training_finished.connect(self.on_training_finished)
             self.model_trainer.start()
+            print("retraining")
             
     def train_model(self):
         data = []
@@ -441,12 +466,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 for site in examples:
                     content = self.fetch_website_content("http://" + site)
                     if content:
+                        data.append(site)
+                        labels.append("unproductive")
                         data.append(content)
                         labels.append("unproductive")
+                        print("part of training")
             else:
                 for site in examples:
                     content = self.fetch_website_content("http://" + site)
                     if content:
+                        data.append(site)
+                        labels.append("unproductive")
                         data.append(content)
                         labels.append("productive")
 
@@ -454,6 +484,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for site in self.whitelisted_sites:
             content = self.fetch_website_content("http://" + site)
             if content:
+                data.append(site)
+                labels.append("productive")
                 data.append(content)
                 labels.append("productive")
                 
@@ -461,6 +493,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for site in self.blacklisted_sites:
             content = self.fetch_website_content("http://" + site)
             if content:
+                data.append(site)
+                labels.append("unproductive")
                 data.append(content)
                 labels.append("unproductive")
 
@@ -468,8 +502,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for site in self.productive_sites:
             content = self.fetch_website_content("http://" + site)
             if content:
+                data.append(site)
+                labels.append("productive")
                 data.append(content)
                 labels.append("productive")
+
 
         self.vectorizer.fit(data)
         self.model.fit(self.vectorizer.transform(data), labels)
@@ -500,9 +537,6 @@ class SettingsPage(QMainWindow, Ui_Settings):
         self.ui = Ui_Settings()
         self.ui.setupUi(self)
         self.sessions = self.parent().sessions
-         # Enable DPI scaling
-        app.setAttribute(Qt.AA_EnableHighDpiScaling, True)
-        app.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
 
         self.ui.AddTiming.clicked.connect(self.add_session)
         self.ui.RemoveTiming.clicked.connect(self.remove_session)
@@ -519,7 +553,14 @@ class SettingsPage(QMainWindow, Ui_Settings):
 
         self.ui.Delay.addItems(["5", "10", "15", "30"])
         self.reload_settings_page()  # Load initial settings
-
+        self.center()
+        
+    def center(self):
+            qr = self.frameGeometry()
+            cp = QDesktopWidget().availableGeometry().center()
+            qr.moveCenter(cp)
+            self.move(qr.topLeft())
+            
     def add_session(self):
         start_time = self.ui.Start.time()
         end_time = self.ui.End.time()
@@ -596,5 +637,8 @@ class SettingsPage(QMainWindow, Ui_Settings):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    # Enable DPI scaling, apparently helps with scaling but clearly not
+    app.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
+    app.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
     window = SplashScreen()
     sys.exit(app.exec_())
