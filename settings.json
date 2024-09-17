@@ -16,18 +16,20 @@
         }
     ],
     "categories": {
-        "Social Media": true,
+        "Social Media": false,
         "Games": false,
-        "Video Entertainment": true,
-        "Visual Entertainment": false,
+        "Video Entertainment": false,
+        "Visual Entertainment": true,
         "Forums": true,
-        "Online Shopping": false,
+        "Online Shopping": true,
         "Productivity Killers": true
     },
     "whitelisted_sites": [],
     "blacklisted_sites": [],
     "productive_sites": [
         "docs.google.com",
+        "www.workramp.com/blog/what-is-leadership-development/",
+        "www.workramp.com/blog/what-is-sales-training/",
         "slides.google.com",
         "mail.google.com",
         "scholar.google.com",
@@ -37,6 +39,6 @@
         "canva.com",
         "drive.google.com"
     ],
-    "override_delay": true,
+    "override_delay": false,
     "warning_message": "You are straying towards the dark side... For your own good, please return to being productive!"
 }

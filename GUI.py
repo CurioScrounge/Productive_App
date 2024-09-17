@@ -3,8 +3,8 @@ import json
 from PyQt5.QtWidgets import QApplication, QMainWindow, QCheckBox, QListWidgetItem, QFileDialog, QDialog, QLabel, QVBoxLayout, QPushButton, QMessageBox,QDesktopWidget
 from PyQt5.QtCore import Qt, QTime, QTimer, QElapsedTimer, pyqtSlot, QMetaObject
 from PyQt5 import QtCore
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.naive_bayes import MultinomialNB
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
 from PIL import ImageGrab, Image
 import pytesseract
 import threading
@@ -147,9 +147,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.model_trained = False
 
         # Initialize the ML model
-        self.vectorizer = CountVectorizer()
-        self.model = MultinomialNB()
-
+        self.vectorizer = TfidfVectorizer()
+        self.model = LogisticRegression(max_iter=1000)
+        
         #Set up.. from previously saved settings
         self.settings = load_settings()
         self.wait_time = int(self.settings.get("wait_time", "5"))
@@ -459,57 +459,44 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def train_model(self):
         data = []
         labels = []
-
         # Use the example sites listed from chosen unproductive categories to train
         for category, examples in self.category_sites.items():
             if self.categories.get(category):
                 for site in examples:
                     content = self.fetch_website_content("http://" + site)
                     if content:
-                        data.append(site)
-                        labels.append("unproductive")
                         data.append(content)
                         labels.append("unproductive")
-                        print("part of training")
             else:
                 for site in examples:
                     content = self.fetch_website_content("http://" + site)
                     if content:
-                        data.append(site)
-                        labels.append("unproductive")
                         data.append(content)
                         labels.append("productive")
 
-        # Train ML to detect content of whitelisted sites as productive
+        # Add whitelisted and blacklisted sites...
         for site in self.whitelisted_sites:
             content = self.fetch_website_content("http://" + site)
             if content:
-                data.append(site)
-                labels.append("productive")
                 data.append(content)
                 labels.append("productive")
-                
-        # Treat blacklisted sites as unproductive
+
         for site in self.blacklisted_sites:
             content = self.fetch_website_content("http://" + site)
             if content:
-                data.append(site)
-                labels.append("unproductive")
                 data.append(content)
                 labels.append("unproductive")
 
-        # Add manually specified productive sites (from settings.json)
+        # Add manually specified productive sites
         for site in self.productive_sites:
             content = self.fetch_website_content("http://" + site)
             if content:
-                data.append(site)
-                labels.append("productive")
                 data.append(content)
                 labels.append("productive")
 
-
-        self.vectorizer.fit(data)
-        self.model.fit(self.vectorizer.transform(data), labels)
+        # Fit the vectorizer and model
+        features = self.vectorizer.fit_transform(data)
+        self.model.fit(features, labels)
 
     def fetch_website_content(self, url):
         if not url.startswith("http://") and not url.startswith("https://"):
@@ -641,4 +628,5 @@ if __name__ == "__main__":
     app.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
     app.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
     window = SplashScreen()
+    window.hide()
     sys.exit(app.exec_())

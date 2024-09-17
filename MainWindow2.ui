@@ -258,7 +258,7 @@ background-color: rgb(104, 109, 118);
         <property name="maximumSize">
          <size>
           <width>16777215</width>
-          <height>201</height>
+          <height>1000</height>
          </size>
         </property>
         <property name="font">
@@ -442,7 +442,7 @@ background-color: rgb(104, 109, 118);
         <property name="maximumSize">
          <size>
           <width>16777215</width>
-          <height>201</height>
+          <height>1000</height>
          </size>
         </property>
         <property name="font">

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'MainWindow - CopyDnpFFF.ui'
+## Form generated from reading UI file 'MainWindow - CopyXuDfyG.ui'
 ##
-## Created by: Qt User Interface Compiler version 5.14.1
+## Created by: Qt User Interface Compiler version 5.15.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -17,7 +17,7 @@ from PyQt5.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont, QFont
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
-        if MainWindow.objectName():
+        if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.resize(1045, 609)
         MainWindow.setStyleSheet(u"QWidget{\n"
@@ -153,7 +153,7 @@ class Ui_MainWindow(object):
         self.Whitelist = QListWidget(self.centralwidget)
         self.Whitelist.setObjectName(u"Whitelist")
         self.Whitelist.setMinimumSize(QSize(0, 100))
-        self.Whitelist.setMaximumSize(QSize(16777215, 201))
+        self.Whitelist.setMaximumSize(QSize(16777215, 1000))
         font5 = QFont()
         font5.setPointSize(10)
         font5.setItalic(False)
@@ -234,7 +234,7 @@ class Ui_MainWindow(object):
         self.Blacklist = QListWidget(self.centralwidget)
         self.Blacklist.setObjectName(u"Blacklist")
         self.Blacklist.setMinimumSize(QSize(0, 100))
-        self.Blacklist.setMaximumSize(QSize(16777215, 201))
+        self.Blacklist.setMaximumSize(QSize(16777215, 1000))
         self.Blacklist.setFont(font5)
         self.Blacklist.setStyleSheet(u"QListWidget{\n"
 "	background-color: rgb(238, 238, 238);\n"
