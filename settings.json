@@ -13,11 +13,24 @@
                 true,
                 true
             ]
+        },
+        {
+            "start_time": "20:00",
+            "end_time": "00:00",
+            "days": [
+                false,
+                true,
+                false,
+                false,
+                false,
+                false,
+                false
+            ]
         }
     ],
     "categories": {
         "Social Media": false,
-        "Games": false,
+        "Games": true,
         "Video Entertainment": false,
         "Visual Entertainment": true,
         "Forums": true,
@@ -39,6 +52,6 @@
         "canva.com",
         "drive.google.com"
     ],
-    "override_delay": false,
-    "warning_message": "You are straying towards the dark side... For your own good, please return to being productive!"
+    "override_delay": true,
+    "warning_message": "You are straying towards the dark side...please return to being productive!"
 }

@@ -30,6 +30,7 @@ class ModelTrainer(QThread):
     # This method is run when the thread starts
     def run(self):
         self.main_window.train_model()  # Call the main window's training method
+        print("start training")
         self.training_finished.emit()  # Emit the signal when training is finished
 
 # Import the UI files generated using PyQt Designer
@@ -185,13 +186,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Unproductive category names with example site links
         self.category_sites = {
-            "Social Media": ["facebook.com", "twitter.com", "instagram.com", "discord.com"],
-            "Games": ["crazygames.com", "store.epicgames.com", "store.steampowered.com", "poki.com", "minesweeper.online"],
-            "Video Entertainment": ["youtube.com", "netflix.com", "primevideo.com", "disneyplus.com", "sky.com"],
+            "Social Media": ["facebook.com", "twitter.com", "instagram.com", "discord.com",""],
+            "Games": ["crazygames.com", "store.epicgames.com", "store.steampowered.com", 
+                      "poki.com", "minesweeper.online","nytimes.com/games/wordle", "nytimes.com/puzzles/spelling-bee", "nytimes.com/crosswords/game/mini",
+                      "playhop.com","coolmathgames.com","game-quotes.com/en","aol.com/games","solitaired.com"],
+            "Video Entertainment": ["youtube.com", "sky.com","en.tinyzone-tv.com","vimeo.com/watch","netflix.com/hk-en/browse/genre/839338","ondisneyplus.disney.com",
+                                    "youtube.com/@disneyplus/videos","youtube.com/@PrimeVideo/videos","amazon.com/gp/video/storefront"],
             "Visual Entertainment": ["globalcomix.com", "mangadex.org", "manganato.com", "anime-planet.com", "readallcomics.com"],
-            "Forums": ["reddit.com", "quora.com", "discord.com", "steam.com"],
-            "Online Shopping": ["amazon.com", "alibaba.com", "aliexpress.com", "zalora.com", "eBay.com", "taobao.com", "hktvmall.com"],
-            "Productivity Killers": ["nytimes.com/games/wordle", "nytimes.com/puzzles/spelling-bee", "nytimes.com/crosswords/game/mini", ""]
+            "Forums": ["reddit.com","reddit.com/r/popular","reddit.com/r/all" "quora.com", "discord.com", "threads.net/?hl=en","hypixel.net/forums/","reddit.com/r/all/new"],
+            "Online Shopping": ["amazon.com", "alibaba.com", "aliexpress.com", "zalora.com", "eBay.com", "taobao.com", "hktvmall.com","amazon.com/ref=nav_logo","zalora.com.hk/s/women",
+                                "hktvmall.com/hktv/en/","myntra.com",""],
         }
 
         # Populate the UI with data from settings
@@ -327,7 +331,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if category == "Social Media":
                 tooltip_text = "Examples: facebook, twitter, instagram, github"
             elif category == "Games":
-                tooltip_text = "Examples: crazygames, epicgames, steam"
+                tooltip_text = "Examples: crazygames, epicgames, steam, wordle, spelling bee, crosswords.."
             elif category == "Video Entertainment":
                 tooltip_text = "Examples: youtube, netflix, prime video, disney plus"
             elif category == "Visual Entertainment":
@@ -336,8 +340,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 tooltip_text = "Examples: reddit, quora"
             elif category == "Online Shopping":
                 tooltip_text = "Examples: amazon, taobao, aliexpress.."
-            else:
-                tooltip_text = "Examples: wordle, spelling bee, crosswords.."
+                
             checkbox.setToolTip(tooltip_text)  # Set the tooltip for the checkbox
             self.Categories.addWidget(checkbox)  # Add the checkbox to the UI
             checkbox.stateChanged.connect(lambda state, name=category: self.update_category_state(name, state))
@@ -548,6 +551,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         try:
             response = requests.get(url)  # Send a request to the website
             soup = BeautifulSoup(response.text, 'html.parser')  # Parse the HTML content
+            print("fetching content")
             return ' '.join(re.findall(r'\w+', soup.get_text().lower()))  # Return the cleaned text
         except Exception as e:
             print(f"Error fetching website content: {e}")
