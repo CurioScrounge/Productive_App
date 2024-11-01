@@ -186,16 +186,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Unproductive category names with example site links
         self.category_sites = {
-            "Social Media": ["facebook.com", "twitter.com", "instagram.com", "discord.com",""],
-            "Games": ["crazygames.com", "store.epicgames.com", "store.steampowered.com", 
+            "Social Media": ["facebook.com", "twitter.com", "instagram.com", "discord.com","threads.net/?hl=en","x.com/example","x.com/elonmusk","instagram.com/explore/?hl=en"],
+            "Games": ["crazygames.com", "store.epicgames.com/en-US/", "store.steampowered.com", 
                       "poki.com", "minesweeper.online","nytimes.com/games/wordle", "nytimes.com/puzzles/spelling-bee", "nytimes.com/crosswords/game/mini",
-                      "playhop.com","coolmathgames.com","game-quotes.com/en","aol.com/games","solitaired.com"],
-            "Video Entertainment": ["youtube.com", "sky.com","en.tinyzone-tv.com","vimeo.com/watch","netflix.com/hk-en/browse/genre/839338","ondisneyplus.disney.com",
-                                    "youtube.com/@disneyplus/videos","youtube.com/@PrimeVideo/videos","amazon.com/gp/video/storefront"],
+                      "playhop.com","coolmathgames.com","aol.com/games","solitaired.com","crazygames.no/sitemap/games/2",],
+            "Video Entertainment": ["youtube.com","en.tinyzone-tv.com","vimeo.com/watch","netflix.com/hk-en/browse/genre/839338","ondisneyplus.disney.com",
+                                    "youtube.com/@disneyplus/videos","youtube.com/@PrimeVideo/videos","amazon.com/gp/video/storefront","twitch.tv"],
             "Visual Entertainment": ["globalcomix.com", "mangadex.org", "manganato.com", "anime-planet.com", "readallcomics.com"],
-            "Forums": ["reddit.com","reddit.com/r/popular","reddit.com/r/all" "quora.com", "discord.com", "threads.net/?hl=en","hypixel.net/forums/","reddit.com/r/all/new"],
+            "Forums": ["reddit.com","reddit.com/r/popular","reddit.com/r/all" "quora.com", "reddit.com/r/all/new"],
             "Online Shopping": ["amazon.com", "alibaba.com", "aliexpress.com", "zalora.com", "eBay.com", "taobao.com", "hktvmall.com","amazon.com/ref=nav_logo","zalora.com.hk/s/women",
-                                "hktvmall.com/hktv/en/","myntra.com",""],
+                                "hktvmall.com/hktv/en/",],
+        }
+        
+        self.KeyTerms={
+            "Social Media": ["Instagram","Discord","Facebook","Snapchat","Reels","Notifications","Messages","Shorts","Gaming"],
+            "Games": ["Games","Game Menu","Resume Game","New Game","Control key"],
+            "Video Entertainment": ["Watch Later","Playlist","@","Videos","Play","Stream","Watch","Reaction","Youtube","Netflix","DisneyPlus","Prime Video","watching","Episode","Season"],
+            "Visual Entertainment": ["Read Manga","Read Comic","Chapter"],
+            "Forums": ["Reddit"],
+            "Online Shopping": ["Amazon","Taobao","Aliexpress","Buy","Sale","$"],
         }
 
         # Populate the UI with data from settings
@@ -502,6 +511,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     # Train the machine learning model based on user preferences and example sites
     def train_model(self):
+        checked=0
         data = []
         labels = []
         
@@ -509,6 +519,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for category, examples in self.category_sites.items():
             if self.categories.get(category):
                 for site in examples:
+                    checked+=1
                     content = self.fetch_website_content("http://" + site)
                     if content:
                         data.append(content)
@@ -519,6 +530,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     if content:
                         data.append(content)
                         labels.append("productive")
+            
+        for category, terms in self.KeyTerms.items():
+            if self.categories.get(category):
+                for term in terms:
+                    data.append(term)
+                    labels.append("unproductive")
+            else:
+                for term in terms:
+                    data.append(term)
+                    labels.append("productive")
 
         # Add whitelisted and blacklisted sites to the training data
         for site in self.whitelisted_sites:
@@ -539,10 +560,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if content:
                 data.append(content)
                 labels.append("productive")
-
-        # Train the model using the collected data
-        features = self.vectorizer.fit_transform(data)  # Transform the data into features
-        self.model.fit(features, labels)  # Train the logistic regression model
+                
+        if(checked==0):
+            print("Error, no categories selected")
+            return
+        else:        # Train the model using the collected data
+            features = self.vectorizer.fit_transform(data)  # Transform the data into features
+            self.model.fit(features, labels)  # Train the logistic regression model
 
     # Fetch the content of a website for training or prediction
     def fetch_website_content(self, url):

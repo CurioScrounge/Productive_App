@@ -2,7 +2,7 @@
     "wait_time": "5",
     "sessions": [
         {
-            "start_time": "10:00",
+            "start_time": "14:00",
             "end_time": "17:00",
             "days": [
                 true,
@@ -15,26 +15,26 @@
             ]
         },
         {
-            "start_time": "20:00",
-            "end_time": "00:00",
+            "start_time": "12:00",
+            "end_time": "23:00",
             "days": [
-                false,
                 true,
-                false,
-                false,
-                false,
-                false,
-                false
+                true,
+                true,
+                true,
+                true,
+                true,
+                true
             ]
         }
     ],
     "categories": {
         "Social Media": false,
         "Games": true,
-        "Video Entertainment": false,
+        "Video Entertainment": true,
         "Visual Entertainment": true,
-        "Forums": true,
-        "Online Shopping": true,
+        "Forums": false,
+        "Online Shopping": false,
         "Productivity Killers": true
     },
     "whitelisted_sites": [],
@@ -50,8 +50,12 @@
         "coursera.org",
         "edx.org",
         "canva.com",
-        "drive.google.com"
+        "drive.google.com",
+        "bbc.com/news",
+        "scmp.com/news",
+        "en.wikipedia.org/wiki/Main_Page",
+        "en.wikipedia.org/wiki/Portal:Current_events"
     ],
     "override_delay": true,
-    "warning_message": "You are straying towards the dark side...please return to being productive!"
+    "warning_message": "You are straying from the right path...for your own good, turn back!"
 }
