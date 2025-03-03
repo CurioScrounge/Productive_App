@@ -3,6 +3,19 @@ import json
 from PyQt5.QtWidgets import QApplication, QMainWindow, QCheckBox, QListWidgetItem, QFileDialog, QDialog, QLabel, QVBoxLayout, QPushButton, QMessageBox, QDesktopWidget
 from PyQt5.QtCore import Qt, QTime, QTimer, QElapsedTimer, pyqtSlot, QMetaObject
 from PyQt5 import QtCore
+from PyQt5 import QtGui
+from PyQt5.QtGui import QFont
+from sklearn.ensemble import RandomForestClassifier
+import nltk
+from sklearn.feature_extraction.text import TfidfVectorizer
+from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
+import numpy as np
+import re
+
+
+# Ensure NLTK stopwords and stemmer are ready
+nltk.download("stopwords")
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from PIL import ImageGrab
@@ -141,6 +154,8 @@ class SplashScreen(QMainWindow):
     # Called when the model training is finished
     def on_training_finished(self):
         print("Model training completed.")
+        # Update the label to indicate training is complete
+
         self.main_window.on_training_finished()  # Notify the main window that training is done
 
 # Set up the path to the Tesseract OCR executable
@@ -156,10 +171,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.currently_in_session = False  # Indicates whether the user is in a session
         self.model_trained = False  # Indicates whether the machine learning model is trained
 
-        # Initialize the machine learning model for detecting unproductive activity
-        self.vectorizer = TfidfVectorizer()  # Convert text to numeric features using TF-IDF
-        self.model = LogisticRegression(max_iter=1000)  # Use logistic regression with a high iteration limit
-
+        self.vectorizer = TfidfVectorizer()  # TF-IDF for text features
+        self.model = RandomForestClassifier(n_estimators=100, random_state=42)  # Random forest with 100 trees
+        self.training_status_label = QLabel("Training Status: Training", self)
+        self.training_status_label.setGeometry(20, 20, 300, 40)  # Position and size the label
+        self.training_status_label.setFont(QFont("Arial", 12))  # Set font and size
+        self.training_status_label.setStyleSheet("color: yellow;")  # Set text color
+        self.training_status_label.show()
+        
+        
         # Load settings from the settings file
         self.settings = load_settings()
         self.wait_time = int(self.settings.get("wait_time", "5"))  # Time before showing a warning
@@ -192,7 +212,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                       "playhop.com","coolmathgames.com","aol.com/games","solitaired.com","crazygames.no/sitemap/games/2",],
             "Video Entertainment": ["youtube.com","en.tinyzone-tv.com","vimeo.com/watch","netflix.com/hk-en/browse/genre/839338","ondisneyplus.disney.com",
                                     "youtube.com/@disneyplus/videos","youtube.com/@PrimeVideo/videos","amazon.com/gp/video/storefront","twitch.tv"],
-            "Visual Entertainment": ["globalcomix.com", "mangadex.org", "manganato.com", "anime-planet.com", "readallcomics.com"],
+            "Visual Entertainment": ["globalcomix.com", "mangadex.org", "manganato.com", "anime-planet.com", "readallcomics.com","https://www.webtoons.com/en/"],
             "Forums": ["reddit.com","reddit.com/r/popular","reddit.com/r/all" "quora.com", "reddit.com/r/all/new"],
             "Online Shopping": ["amazon.com", "alibaba.com", "aliexpress.com", "zalora.com", "eBay.com", "taobao.com", "hktvmall.com","amazon.com/ref=nav_logo","zalora.com.hk/s/women",
                                 "hktvmall.com/hktv/en/",],
@@ -200,13 +220,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.KeyTerms={
             "Social Media": ["Instagram","Discord","Facebook","Snapchat","Reels","Notifications","Messages","Shorts","Gaming"],
-            "Games": ["Games","Game Menu","Resume Game","New Game","Control key"],
-            "Video Entertainment": ["Watch Later","Playlist","@","Videos","Play","Stream","Watch","Reaction","Youtube","Netflix","DisneyPlus","Prime Video","watching","Episode","Season"],
+            "Games": ["Game","Game Menu","Resume Game","New Game","Control key","play now"],
+            "Video Entertainment": ["Watch Later","Playlist","Videos","Play","Stream","Watch","Reaction","Youtube","Netflix","DisneyPlus","Prime Video","watching","Episode","Season","Liked Videos"],
             "Visual Entertainment": ["Read Manga","Read Comic","Chapter"],
-            "Forums": ["Reddit"],
-            "Online Shopping": ["Amazon","Taobao","Aliexpress","Buy","Sale","$"],
+            "Forums": ["Reddit","Quora","Thread"],
+            "Online Shopping": ["Amazon","Taobao","Aliexpress","Buy","Sale"],
         }
-
+        
+        self.ProductiveKeyTerms = {
+            "Work Tools": ["meeting", "agenda", "task list", "project plan", "budget analysis", "presentation"],
+            "Learning": ["tutorial", "lesson", "exercise", "guide", "certificate", "quiz preparation","about","tools"],
+            "Coding": ["API documentation", "debugging", "code editor", "repository", "commit", "push", "merge", "data", "terminal", "user", "search"],
+            "Writing": ["draft", "outline", "notes", "summary", "article", "report"],
+            "Spreadsheets": ["formula", "pivot table", "row", "column", "cell", "spreadsheet", "data table","populate","calendar","teach"],
+            "General": ["self","class","Computer Science", "drive","mail", "Check", "categories", "websites", "algorithm", "file","settings","google","cast", "Review", "productivity"]
+        }
         # Populate the UI with data from settings
         self.populate_unproductive_categories()
         self.populate_whitelisted_sites()
@@ -221,7 +249,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.activity_monitor_timer = QTimer()
         self.activity_monitor_timer.timeout.connect(self.detect_unproductive_activity)
         self.activity_monitor_timer.start(15000)  # Check every 15 seconds
+    
+    def extract_custom_features(self, text):
+        features = []
 
+        # Key term counts
+        for category, terms in self.KeyTerms.items():
+            features.append(sum(1 for term in terms if term.lower() in text.lower()))
+
+        # Blacklisted site flag
+        blacklist_flag = any(site.lower() in text.lower() for site in self.blacklisted_sites)
+        features.append(int(blacklist_flag))
+
+        # Whitelisted site flag
+        whitelist_flag = any(site.lower() in text.lower() for site in self.whitelisted_sites)
+        features.append(int(whitelist_flag))
+
+        # Length of text
+        features.append(len(text.split()))
+
+        return features
+    
     # Center the main window on the screen
     def center(self):
         qr = self.frameGeometry()
@@ -229,8 +277,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         qr.moveCenter(cp)
         self.move(qr.topLeft())
 
-    # Callback when model training is finished
     def on_training_finished(self):
+        # Update the label
+        self.training_status_label.setText("Training Status: Training complete!")
+        self.training_status_label.setStyleSheet("color: green;")
+
         self.model_trained = True
         print("Model training completed.")
 
@@ -409,6 +460,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             item = QListWidgetItem(site)
             self.Blacklist.addItem(item)
 
+
+    def preprocess_text(self, text):
+            # Remove non-alphabetic characters
+            text = re.sub(r"[^a-zA-Z\s]", "", text)
+            # Convert to lowercase
+            text = text.lower()
+            # Tokenize and remove stopwords
+            stop_words = set(stopwords.words("english"))
+            words = [word for word in text.split() if word not in stop_words]
+            # Stem the words
+            stemmer = PorterStemmer()
+            words = [stemmer.stem(word) for word in words]
+            return " ".join(words)
+        
     # Add a website to the blacklist
     def add_to_blacklist(self):
         url = self.EditBlacklist.text()  # Get the URL entered by the user
@@ -491,17 +556,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def monitor_activity(self):
         self.activity_monitor_timer.start()  # Start the activity monitoring timer
 
-    # Predict whether the given text is unproductive using the trained model
     def predict_unproductive(self, text):
         if not self.currently_in_session or not self.model_trained:
-            return False  # If not in session or model isn't trained, return False
+            return False
 
-        content_features = self.vectorizer.transform([text])  # Transform the text into numeric features
-        prediction = self.model.predict(content_features)  # Use the model to make a prediction
-        return prediction[0] == "unproductive"  # Return True if the prediction is "unproductive"
+        # Preprocess the text
+        preprocessed_text = self.preprocess_text(text)
+
+        # Extract TF-IDF features
+        tfidf_features = self.vectorizer.transform([preprocessed_text]).toarray()
+
+        # Extract custom features
+        custom_features = np.array([self.extract_custom_features(preprocessed_text)])
+
+        # Combine features
+        combined_features = np.hstack((tfidf_features, custom_features))
+
+        # Predict with the Random Forest model
+        prediction = self.model.predict(combined_features)
+        return prediction[0] == "unproductive"
     
     # Start training the machine learning model
     def start_training(self):
+        # Update the label to indicate training in progress
+        self.training_status_label.setText("Training Status: Training in progress...")
+        self.training_status_label.setStyleSheet("color: orange;")  # Change text color to orange
         self.model_trainer = ModelTrainer(self)  # Create a new model trainer thread
         if self.model_trainer.isRunning():
             self.model_trainer.terminate()  # If already running, terminate the old thread
@@ -511,62 +590,75 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     # Train the machine learning model based on user preferences and example sites
     def train_model(self):
-        checked=0
         data = []
         labels = []
-        
-        # Use example sites from the selected unproductive categories to train the model
+
+        # Collect training data
         for category, examples in self.category_sites.items():
-            if self.categories.get(category):
+            if self.categories.get(category):  # Unproductive category
                 for site in examples:
-                    checked+=1
                     content = self.fetch_website_content("http://" + site)
                     if content:
-                        data.append(content)
+                        data.append(self.preprocess_text(content))
                         labels.append("unproductive")
-            else:
+            else:  # Productive category
                 for site in examples:
                     content = self.fetch_website_content("http://" + site)
                     if content:
-                        data.append(content)
+                        data.append(self.preprocess_text(content))
                         labels.append("productive")
-            
+
+        # Add custom keywords
         for category, terms in self.KeyTerms.items():
-            if self.categories.get(category):
-                for term in terms:
-                    data.append(term)
+            for term in terms:
+                data.append(term)
+                if self.categories.get(category):
                     labels.append("unproductive")
-            else:
-                for term in terms:
-                    data.append(term)
+                else:
                     labels.append("productive")
-
-        # Add whitelisted and blacklisted sites to the training data
-        for site in self.whitelisted_sites:
-            content = self.fetch_website_content("http://" + site)
-            if content:
-                data.append(content)
+                    
+            # Add custom keywords from productive KeyTerms
+        for category, terms in self.ProductiveKeyTerms.items():
+            for term in terms:
+                data.append(term)
                 labels.append("productive")
-
+            
+        # Add blacklisted and whitelisted sites
         for site in self.blacklisted_sites:
             content = self.fetch_website_content("http://" + site)
             if content:
-                data.append(content)
+                data.append(self.preprocess_text(content))
                 labels.append("unproductive")
 
-        # Add manually specified productive sites to the training data
-        for site in self.productive_sites:
+        for site in self.whitelisted_sites:
             content = self.fetch_website_content("http://" + site)
             if content:
-                data.append(content)
+                data.append(self.preprocess_text(content))
                 labels.append("productive")
                 
-        if(checked==0):
-            print("Error, no categories selected")
+        for site in self.productive_sites:
+                content = self.fetch_website_content("http://" + site)
+                if content:
+                    data.append(self.preprocess_text(content))
+                    labels.append("productive")
+            
+        if not data:
+            print("No training data available.")
             return
-        else:        # Train the model using the collected data
-            features = self.vectorizer.fit_transform(data)  # Transform the data into features
-            self.model.fit(features, labels)  # Train the logistic regression model
+
+        # Extract TF-IDF features
+        tfidf_features = self.vectorizer.fit_transform(data).toarray()
+
+        # Extract custom features
+        custom_features = [self.extract_custom_features(text) for text in data]
+
+        # Combine TF-IDF and custom features
+        combined_features = np.hstack((tfidf_features, custom_features))
+
+        # Train the Random Forest model
+        self.model.fit(combined_features, labels)
+        self.model_trained = True
+        print("Model training completed.")
 
     # Fetch the content of a website for training or prediction
     def fetch_website_content(self, url):
@@ -590,7 +682,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def send_warning_message(self):
         if not self.warning_displayed:
             self.display_warning_message()  # Display the warning message if it hasn’t been shown yet
-
+        
+    
 # Settings page window class
 class SettingsPage(QMainWindow, Ui_Settings):
     def __init__(self, parent=None):

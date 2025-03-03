@@ -29,7 +29,7 @@
         }
     ],
     "categories": {
-        "Social Media": false,
+        "Social Media": true,
         "Games": true,
         "Video Entertainment": true,
         "Visual Entertainment": true,
@@ -51,10 +51,17 @@
         "edx.org",
         "canva.com",
         "drive.google.com",
+        "classroom.google.com",
         "bbc.com/news",
+        "google.com",
         "scmp.com/news",
         "en.wikipedia.org/wiki/Main_Page",
-        "en.wikipedia.org/wiki/Portal:Current_events"
+        "en.wikipedia.org/wiki/Portal:Current_events",
+        "https://slack.com/",
+        "https://www.w3schools.com/",
+        "https://www.bbc.com/",
+        "https://techcrunch.com/",
+        ""
     ],
     "override_delay": true,
     "warning_message": "You are straying from the right path...for your own good, turn back!"
